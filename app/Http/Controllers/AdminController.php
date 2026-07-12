@@ -20,7 +20,8 @@ class AdminController extends Controller
     public function dashboard()
     {
         // Menghitung statistik untuk Dashboard Admin (Kasir)
-        $totalAntrean = Reservasi::whereIn('status', ['Menunggu Konfirmasi', 'Diproses', 'Dicuci', 'Menunggu Kurir'])->count();
+        // Menghitung pesanan yang masih dalam tahap awal
+        $totalAntrean = Reservasi::whereIn('status', ['Diajukan', 'Diproses'])->count();
         $totalSelesai = Reservasi::where('status', 'Selesai')->count();
 
         return view('admin.dashboard', compact('totalAntrean', 'totalSelesai'));
@@ -39,8 +40,8 @@ class AdminController extends Controller
 
     public function users()
     {
-        // Admin hanya bisa mengelola data pelanggan
-        $users = User::where('role', 'pelanggan')->orderBy('created_at', 'desc')->get();
+        // Admin hanya bisa mengelola data pelanggan (id_role = 3)
+        $users = User::where('id_role', 3)->orderBy('created_at', 'desc')->get();
         $totalPelanggan = $users->count();
 
         return view('admin.users', compact('users', 'totalPelanggan'));
@@ -52,8 +53,8 @@ class AdminController extends Controller
         try {
             $user = User::findOrFail($id);
             
-            // Proteksi: Admin tidak bisa hapus sesama Admin atau Superadmin
-            if ($user->role === 'admin' || $user->role === 'superadmin') {
+            // Proteksi: Admin tidak bisa hapus sesama Admin (2) atau Superadmin (1)
+            if ($user->id_role === 1 || $user->id_role === 2) {
                 return redirect()->back()->with('error', 'Akses Ditolak! Anda tidak bisa menghapus akun staf/admin.');
             }
 
@@ -92,19 +93,20 @@ class AdminController extends Controller
     {
         $request->validate([
             'nama'     => 'required|string|max:40',
+            'no_telp'  => 'required|string|max:20',
             'email'    => 'required|email|unique:ms_user,email|max:50',
             'password' => 'required|min:6',
-            'role'     => 'required|in:admin,pelanggan'
         ]);
 
         User::create([
             'nama'     => $request->nama,
+            'no_telp'  => $request->no_telp,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
-            'role'     => $request->role,
+            'id_role'  => 2, // Default sebagai Admin
         ]);
 
-        return redirect()->back()->with('success', 'Akun ' . strtoupper($request->role) . ' baru berhasil ditambahkan!');
+        return redirect()->back()->with('success', 'Akun ADMIN baru berhasil ditambahkan!');
     }
 
     public function destroySuperUser($id)
@@ -137,7 +139,7 @@ class AdminController extends Controller
     }
 
     // ========================================================
-    // 4. MONITOR ANTREAN & LAPORAN
+    // 4. MONITOR ANTREAN, KURIR & LAPORAN
     // ========================================================
 
     public function antrean()
@@ -150,27 +152,42 @@ class AdminController extends Controller
         return view('admin.antrean', compact('semuaPesanan'));
     }
 
+    public function antreanKurir()
+    {
+        $antrean_kurir = Reservasi::with('user')
+                            ->whereIn('status', ['Diproses'])
+                            ->orderBy('updated_at', 'desc')
+                            ->get();
+
+        return view('admin.kurir', compact('antrean_kurir'));
+    }
+
     public function updateStatus(Request $request, $id)
     {
+        // Validasi status sesuai dropdown terbaru
         $request->validate([
-            'status' => 'required|in:Menunggu Konfirmasi,Diproses,Dicuci,Selesai,Menunggu Kurir'
+            'status' => 'required|in:Diajukan,Diproses,Selesai,Batalkan'
         ]);
 
         try {
             $reservasi = Reservasi::findOrFail($id);
+            
+            // Simpan status baru
             $reservasi->status = $request->status;
-            $reservasi->save();
 
-            // Otomatis lunas jika status Selesai dan pilih Bayar di Toko
-            if ($request->status == 'Selesai') {
+            // Logika Finalisasi Transaksi: Otomatis lunas jika status Selesai
+            if ($request->status == 'Selesai' && $reservasi->status_bayar != 'Lunas') {
                 $pembayaran = Pembayaran::where('id_reservasi', $id)->first();
-                if ($pembayaran && $pembayaran->metode_pembayaran == 'Bayar di Toko') {
+                // Cek jika metode pembayaran manual (Cash/Toko/COD)
+                if ($pembayaran && in_array($pembayaran->metode_bayar, ['Bayar di Toko', 'Bayar di Kasir', 'Cash', 'COD'])) {
+                    $reservasi->status_bayar = 'Lunas';
                     $pembayaran->update([
-                        'status_pembayaran' => 'Lunas',
-                        'tanggal_bayar' => now()
+                        'tanggal' => now()
                     ]);
                 }
             }
+
+            $reservasi->save();
 
             return redirect()->back()->with('success', 'Status Pesanan #' . $id . ' Berhasil Diperbarui!');
         } catch (\Exception $e) {
@@ -180,14 +197,14 @@ class AdminController extends Controller
 
     public function superLaporan()
     {
-        // Mengambil data reservasi yang sudah SELESAI saja untuk laporan omzet
-        $laporanOmzet = Reservasi::with(['user', 'detail.layanan'])
+        // ✅ FIX: Ganti variabel menjadi $laporan agar cocok dengan View Superadmin
+        $laporan = Reservasi::with(['user', 'detail.layanan'])
                         ->where('status', 'Selesai')
                         ->orderBy('updated_at', 'desc')
                         ->get();
 
-        $totalOmzet = $laporanOmzet->sum('total_harga');
+        $totalOmzet = $laporan->sum('total_harga');
 
-        return view('superadmin.laporan', compact('laporanOmzet', 'totalOmzet'));
+        return view('superadmin.laporan', compact('laporan', 'totalOmzet'));
     }
 }

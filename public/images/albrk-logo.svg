@@ -1,0 +1,14 @@
+<svg width="900" height="900" viewBox="0 0 900 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="900" height="900" fill="white"/>
+  <g fill="#050505">
+    <text x="92" y="500" font-family="Arial Black, Impact, sans-serif" font-size="160" font-weight="900" letter-spacing="-12">ALBRK</text>
+    <text x="210" y="585" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="400" letter-spacing="22">shoes cleaning premium</text>
+  </g>
+  <g transform="translate(510 353) rotate(10)">
+    <path d="M24 104c54 21 115 29 186 15 20-4 33 5 37 21 4 17-7 31-27 37-80 25-157 18-230-13-19-8-27-24-21-39 7-16 25-27 55-21Z" fill="#050505"/>
+    <path d="M52 37c16-21 47-18 59 7l27 59c-23 1-45-2-67-10L52 37Z" fill="#050505"/>
+    <path d="M115 17c19-14 48-7 58 14l34 72c-20 5-39 8-58 9L115 17Z" fill="#050505"/>
+    <path d="M52 118c48 18 101 24 162 12" stroke="white" stroke-width="12" stroke-linecap="round"/>
+    <path d="M79 68l60 50M111 56l55 58M143 49l45 55" stroke="white" stroke-width="10" stroke-linecap="round"/>
+  </g>
+</svg>

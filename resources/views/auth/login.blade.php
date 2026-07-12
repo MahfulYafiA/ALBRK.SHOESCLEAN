@@ -3,139 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masuk - ROFF.SHOECLEAN</title>
+    <title>Masuk - ALBRK.SHOECARE</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
-    {{-- CSS UNTUK BACKGROUND KEREN --}}
-    <style> 
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #ffffff; 
-        } 
-        
-        .bg-gradient-light {
-            position: fixed; inset: 0; z-index: -3;
-            background: 
-                radial-gradient(at 10% 20%, hsla(215, 98%, 95%, 1) 0px, transparent 50%),
-                radial-gradient(at 80% 0%, hsla(230, 96%, 96%, 1) 0px, transparent 50%),
-                radial-gradient(at 0% 80%, hsla(240, 80%, 97%, 1) 0px, transparent 50%),
-                radial-gradient(at 90% 90%, hsla(220, 90%, 96%, 1) 0px, transparent 50%);
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0f766e',
+                        secondary: '#14b8a6',
+                        accent: '#334155',
+                        dark: '#020617',
+                        surface: '#0f172a',
+                    },
+                    fontFamily: {
+                        display: ['Space Grotesk', 'sans-serif'],
+                        body: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #5eead4 0%, #cbd5e1 52%, #f8fafc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .bg-dots {
-            position: fixed; inset: 0; z-index: -2;
-            background-image: radial-gradient(#94a3b8 1px, transparent 1px);
-            background-size: 24px 24px; 
-            opacity: 0.3; 
+        .btn-gradient {
+            background: linear-gradient(135deg, #0f766e 0%, #334155 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-gradient:hover {
+            background: linear-gradient(135deg, #0d9488 0%, #1e293b 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px -14px rgba(20, 184, 166, 0.45);
+        }
+
+        .glass-card {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+        }
+
+        .input-modern {
+            background: #1e293b;
+            border: 1px solid #334155;
+            transition: all 0.3s ease;
+        }
+        .input-modern:focus {
+            background: #0f172a;
+            border-color: #0f766e;
+            box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.12);
+            outline: none;
+        }
+
+        .side-pattern {
+            background:
+                linear-gradient(135deg, rgba(15, 118, 110, 0.95) 0%, rgba(51, 65, 85, 0.95) 100%);
         }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4 py-8 md:p-6 selection:bg-blue-600 selection:text-white relative">
+<body class="min-h-screen bg-slate-950 flex items-center justify-center p-4">
 
-    {{-- Layer Background --}}
-    <div class="bg-gradient-light"></div>
-    <div class="bg-dots"></div>
+    <div class="w-full flex rounded-3xl overflow-hidden shadow-2xl shadow-slate-900/50 relative">
+        {{-- Left Side: Form --}}
+        <div class="w-full lg:w-1/2 p-8 sm:p-12 lg:p-16 bg-slate-900 flex flex-col justify-center">
 
-    {{-- CONTAINER UTAMA --}}
-    <div class="w-full max-w-5xl flex bg-white rounded-[2rem] md:rounded-[3rem] shadow-[0_20px_60px_-15px_rgba(37,99,235,0.15)] overflow-hidden border border-slate-100/50 relative z-10">
-        
-        {{-- KOLOM FORM --}}
-        <div class="w-full lg:w-1/2 p-8 sm:p-10 md:p-12 lg:p-16 flex flex-col justify-center">
+            <div class="mb-10">
+                <a href="/" class="flex items-center gap-3 mb-8">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-600 to-slate-700 flex items-center justify-center shadow-lg shadow-teal-700/20">
+                        <i class="fa-solid fa-shoe-prints text-white text-lg"></i>
+                    </div>
+                    <span class="font-display font-bold text-2xl tracking-tight">
+                        ALBRK<span class="gradient-text">.SHOECARE</span>
+                    </span>
+                </a>
 
-            <div class="mb-8 md:mb-10 text-center sm:text-left">
-                <a href="{{ route('landing') }}" class="font-black text-2xl md:text-3xl tracking-tighter italic text-slate-900 mb-6 block">ROFF.<span class="text-blue-600">SHOECLEAN</span></a>
-                <h2 class="text-2xl md:text-3xl font-black uppercase tracking-tighter mb-2">Selamat Datang!</h2>
-                <p class="text-slate-500 font-medium text-xs md:text-sm">Silakan masuk untuk memantau status sepatu Anda.</p>
+                <h1 class="font-display text-3xl lg:text-4xl font-bold text-white mb-2">Selamat Datang!</h1>
+                <p class="text-gray-400">Masuk untuk mengelola reservasi sepatu Anda.</p>
             </div>
 
             @if($errors->any())
-                <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl mb-6 text-[11px] font-bold shadow-sm text-center">
+                <div class="bg-red-900/30 border border-red-800 text-red-300 px-5 py-4 rounded-2xl mb-6 text-sm font-medium">
+                    <i class="fa-solid fa-circle-exclamation mr-2"></i>
                     {{ $errors->first() }}
                 </div>
             @endif
 
-            <form action="{{ route('login') }}" method="POST" class="space-y-4 md:space-y-5" id="loginForm">
+            <form action="{{ route('login') }}" method="POST" class="space-y-5" id="loginForm">
                 @csrf
+
                 <div>
-                    <label class="block text-[10px] md:text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Alamat Email</label>
-                    <input type="email" name="email" value="{{ old('email') }}" required 
-                        placeholder="Masukkan alamat email Anda"
-                        class="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 md:px-6 md:py-4 rounded-xl md:rounded-2xl text-sm font-bold text-slate-700 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400 placeholder:font-medium">
-                </div>
-                
-                <div>
-                    <label class="block text-[10px] md:text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Kata Sandi</label>
-                    <input type="password" name="password" required 
-                        placeholder="Masukkan kata sandi Anda"
-                        class="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 md:px-6 md:py-4 rounded-xl md:rounded-2xl text-sm font-bold text-slate-700 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400 placeholder:font-medium">
-                </div>
-                
-                <div class="flex items-center justify-between mt-2">
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="remember" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
-                        <span class="text-[11px] md:text-xs font-bold text-slate-500">Ingat Saya</span>
-                    </label>
-                    {{-- 🚨 UPDATE: Link Lupa Sandi Arah ke Route Password Request Bawaan Laravel 🚨 --}}
-                    <a href="{{ route('password.request') }}" class="text-[11px] md:text-xs font-bold text-blue-600 hover:text-slate-900 transition-colors">Lupa Sandi?</a>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Email</label>
+                    <input type="email" name="email" value="{{ old('email') }}" required
+                        placeholder="nama@email.com"
+                        class="input-modern w-full px-5 py-4 rounded-xl text-sm font-medium text-gray-200 placeholder:text-gray-500">
                 </div>
 
-                <button type="submit" id="submitBtn" 
-                    class="w-full mt-2 bg-slate-900 text-white py-4 rounded-xl md:rounded-2xl font-black uppercase text-[10px] md:text-xs tracking-[0.2em] hover:bg-blue-600 hover:shadow-xl hover:shadow-blue-600/20 transition-all duration-300 active:scale-[0.98]">
-                    Masuk Sekarang
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Password</label>
+                    <div class="relative">
+                        <input type="password" name="password" required id="password"
+                            placeholder="Masukkan password"
+                            class="input-modern w-full px-5 py-4 rounded-xl text-sm font-medium text-gray-200 placeholder:text-gray-500 pr-12">
+                        <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors">
+                            <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="remember" class="w-4 h-4 rounded border-slate-600 text-slate-500 focus:ring-slate-500 bg-slate-800">
+                        <span class="text-sm text-gray-400">Ingat saya</span>
+                    </label>
+                    <a href="{{ route('password.request') }}" class="text-sm font-semibold text-teal-300 hover:text-teal-100 transition-colors">
+                        Lupa password?
+                    </a>
+                </div>
+
+                <button type="submit" id="submitBtn"
+                    class="btn-gradient w-full text-white py-4 rounded-xl font-semibold text-sm tracking-wide mt-2">
+                    <span id="btnText">Masuk Sekarang</span>
+                    <span id="btnLoading" class="hidden">
+                        <i class="fa-solid fa-spinner fa-spin mr-2"></i>Memproses...
+                    </span>
                 </button>
             </form>
 
-            <div class="relative flex items-center justify-center mt-6 mb-6">
-                <div class="flex-grow border-t border-slate-100"></div>
-                <span class="flex-shrink mx-4 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-300 bg-white px-2">Atau</span>
-                <div class="flex-grow border-t border-slate-100"></div>
+            <div class="relative flex items-center my-6">
+                <div class="flex-grow border-t border-slate-700"></div>
+                <span class="flex-shrink mx-4 text-xs font-semibold uppercase tracking-wider text-gray-500">atau</span>
+                <div class="flex-grow border-t border-slate-700"></div>
             </div>
 
-            <a href="{{ route('login.google') }}" class="w-full bg-white border border-slate-200 text-slate-700 py-3.5 md:py-4 rounded-xl md:rounded-2xl font-black uppercase text-[10px] md:text-xs tracking-widest hover:bg-slate-50 hover:border-blue-200 transition-all flex items-center justify-center gap-3 shadow-sm mb-6">
-                <svg class="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24">
+            <a href="{{ route('login.google') }}"
+                class="w-full bg-slate-800 border-2 border-slate-700 text-gray-300 py-4 rounded-xl font-semibold text-sm hover:border-slate-500 hover:text-white transition-all flex items-center justify-center gap-3 shadow-sm">
+                <svg class="w-5 h-5" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                 </svg>
-                Login dengan Gmail
+                Masuk dengan Google
             </a>
 
-            {{-- LINK DAFTAR --}}
-            <p class="text-center text-[10px] md:text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-2">
-                Belum punya akun? <a href="{{ route('register') }}" class="text-blue-600 hover:text-slate-900 transition-colors font-black">Daftar</a>
+            <p class="text-center text-sm text-gray-400 mt-8">
+                Belum punya akun?
+                <a href="{{ route('register') }}" class="font-semibold text-teal-300 hover:text-teal-100 transition-colors">Daftar sekarang</a>
             </p>
 
-            {{-- TOMBOL KEMBALI DI BAWAH --}}
-            <div class="mt-8 text-center">
-                <a href="{{ url('/') }}" class="inline-block text-[10px] md:text-[11px] font-black text-slate-400 hover:text-slate-900 transition-colors uppercase tracking-[0.2em]">
-                    Kembali
-                </a>
-            </div>
-
+            <a href="{{ url('/') }}" class="block text-center text-sm text-gray-500 hover:text-gray-300 mt-4 transition-colors">
+                <i class="fa-solid fa-arrow-left mr-2"></i>Kembali ke Beranda
+            </a>
         </div>
 
-        {{-- KOLOM GAMBAR (Hanya Desktop) --}}
-        <div class="hidden lg:block lg:w-1/2 bg-blue-600 relative p-12 overflow-hidden flex flex-col justify-end">
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent z-10"></div>
-            <div class="absolute inset-0 w-full h-full object-cover mix-blend-overlay bg-slate-900 opacity-40"></div>
-            
-            <div class="relative z-20 text-white mb-10">
-                <h3 class="text-4xl font-black tracking-tighter uppercase leading-[1.1] italic">Perawatan <br> Premium.</h3>
-                <p class="text-blue-50 font-medium text-sm mt-4 leading-relaxed max-w-sm">Akses dashboard Anda untuk melakukan reservasi online dan melacak proses cuci sepatu secara real-time.</p>
+        {{-- Right Side: Branding --}}
+        <div class="hidden lg:flex lg:w-1/2 side-pattern relative overflow-hidden">
+            {{-- Decorative Elements --}}
+            <div class="relative z-10 flex flex-col justify-end p-12 text-white">
+                <div class="mb-8">
+                    <h2 class="font-display text-4xl lg:text-5xl font-bold leading-tight mb-4">
+                        Rawat Sepatu,<br>
+                        <span class="italic opacity-90">Tingkatkan Gaya.</span>
+                    </h2>
+                    <p class="text-white/70 text-base max-w-sm leading-relaxed">
+                        Akses dashboard untuk reservasi online dan pantau proses treatment sepatu Anda secara real-time.
+                    </p>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                            <i class="fa-solid fa-check text-sm"></i>
+                        </div>
+                        <span class="text-sm text-white/80">Reservasi Online 24/7</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                            <i class="fa-solid fa-check text-sm"></i>
+                        </div>
+                        <span class="text-sm text-white/80">Pantau Status Real-time</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                            <i class="fa-solid fa-check text-sm"></i>
+                        </div>
+                        <span class="text-sm text-white/80">Treatment Premium Quality</span>
+                    </div>
+                </div>
             </div>
         </div>
-
     </div>
 
     <script>
+        function togglePassword() {
+            const password = document.getElementById('password');
+            const icon = document.getElementById('eyeIcon');
+
+            if (password.type === 'password') {
+                password.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                password.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
         const form = document.getElementById('loginForm');
         const btn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnLoading = document.getElementById('btnLoading');
+
         form.addEventListener('submit', function() {
-            btn.innerHTML = "Memproses...";
-            btn.classList.add('opacity-70', 'cursor-not-allowed');
+            btnText.classList.add('hidden');
+            btnLoading.classList.remove('hidden');
             btn.disabled = true;
+            btn.classList.add('opacity-75');
         });
     </script>
 </body>

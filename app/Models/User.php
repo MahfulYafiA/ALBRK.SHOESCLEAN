@@ -20,11 +20,11 @@ class User extends Authenticatable
     public $timestamps = true; 
 
     // 4. Daftar kolom yang boleh diisi (Mass Assignment)
-    // Catatan: id_role saya hilangkan jika di migrasi terakhir Mas tidak memakainya
     protected $fillable = [
         'nama',
         'email',
         'password',
+        'id_role',    // ✅ DITAMBAHKAN KEMBALI agar Seeder bisa masuk
         'no_telp',
         'alamat',
         'foto_profil',
@@ -43,7 +43,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'password' => 'hashed',
+            // 🚨 'password' => 'hashed' DIHAPUS agar tidak terjadi Double Hash
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

@@ -1,134 +1,212 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrasi - ROFF.SHOECLEAN</title>
+    <title>Daftar - ALBRK.SHOECARE</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    {{-- CSS BACKGROUND KONSISTEN DENGAN LOGIN --}}
-    <style> 
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #ffffff; 
-        } 
-        
-        .bg-gradient-light {
-            position: fixed; inset: 0; z-index: -3;
-            background: 
-                radial-gradient(at 10% 20%, hsla(215, 98%, 95%, 1) 0px, transparent 50%),
-                radial-gradient(at 80% 0%, hsla(230, 96%, 96%, 1) 0px, transparent 50%),
-                radial-gradient(at 0% 80%, hsla(240, 80%, 97%, 1) 0px, transparent 50%),
-                radial-gradient(at 90% 90%, hsla(220, 90%, 96%, 1) 0px, transparent 50%);
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0f766e',
+                        secondary: '#14b8a6',
+                        accent: '#334155',
+                        dark: '#020617',
+                        surface: '#0f172a',
+                    },
+                    fontFamily: {
+                        display: ['Space Grotesk', 'sans-serif'],
+                        body: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #5eead4 0%, #cbd5e1 52%, #f8fafc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .bg-dots {
-            position: fixed; inset: 0; z-index: -2;
-            background-image: radial-gradient(#94a3b8 1px, transparent 1px);
-            background-size: 24px 24px; 
-            opacity: 0.3; 
+        .btn-gradient {
+            background: linear-gradient(135deg, #0f766e 0%, #334155 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-gradient:hover {
+            background: linear-gradient(135deg, #0d9488 0%, #1e293b 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px -14px rgba(20, 184, 166, 0.45);
+        }
+
+        .input-modern {
+            background: #1e293b;
+            border: 1px solid #334155;
+            transition: all 0.3s ease;
+        }
+        .input-modern:focus {
+            background: #0f172a;
+            border-color: #0f766e;
+            box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.12);
+            outline: none;
+        }
+
+        .side-pattern {
+            background:
+                linear-gradient(135deg, rgba(15, 118, 110, 0.95) 0%, rgba(51, 65, 85, 0.95) 100%);
         }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4 py-12 md:p-6 selection:bg-blue-600 selection:text-white relative">
+<body class="min-h-screen bg-slate-950 flex items-center justify-center p-4">
 
-    {{-- Layer Background --}}
-    <div class="bg-gradient-light"></div>
-    <div class="bg-dots"></div>
+    <div class="w-full flex rounded-3xl overflow-hidden shadow-2xl shadow-slate-900/50">
+        {{-- Left Side: Branding --}}
+        <div class="hidden lg:flex lg:w-1/2 side-pattern relative overflow-hidden">
+            <div class="relative z-10 flex flex-col justify-end p-12 text-white">
+                <div class="mb-8">
+                    <h2 class="font-display text-4xl lg:text-5xl font-bold leading-tight mb-4">
+                        Mulai Perawatan<br>
+                        <span class="italic opacity-90">Sepatu Anda.</span>
+                    </h2>
+                    <p class="text-white/70 text-base max-w-sm leading-relaxed">
+                        Daftar sekarang dan nikmati kemudahan reservasi online serta pantau treatment sepatu Anda secara real-time.
+                    </p>
+                </div>
 
-    {{-- LOGO ATAS --}}
-    <div class="mb-8 text-center relative z-10">
-        <a href="{{ route('landing') }}" class="font-black text-2xl md:text-3xl tracking-tighter italic text-slate-900 block">ROFF.<span class="text-blue-600">SHOECLEAN</span></a>
-    </div>
-
-    {{-- CONTAINER FORM --}}
-    <div class="w-full max-w-lg bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(37,99,235,0.15)] border border-slate-100/50 p-8 sm:p-10 relative z-10">
-        
-        <div class="mb-8 text-center sm:text-left">
-            <h2 class="text-2xl md:text-3xl font-black tracking-tighter mb-2 text-slate-900">Buat Akun</h2>
-            <p class="text-slate-500 font-medium text-xs md:text-sm">Daftarkan diri Anda untuk mulai membuat reservasi.</p>
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                            <i class="fa-solid fa-calendar-check text-sm"></i>
+                        </div>
+                        <span class="text-sm text-white/80">Reservasi Online Mudah</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                            <i class="fa-solid fa-bell text-sm"></i>
+                        </div>
+                        <span class="text-sm text-white/80">Notifikasi Status Real-time</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                            <i class="fa-solid fa-star text-sm"></i>
+                        </div>
+                        <span class="text-sm text-white/80">Treatment Premium Quality</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        {{-- 🚨 UPDATE NOTIFIKASI ERROR: Menampilkan semua pesan error dengan rapi --}}
-        @if($errors->any())
-            <div class="bg-red-50 border border-red-200 text-red-600 px-5 py-4 rounded-xl mb-6 text-[11px] font-bold shadow-sm text-left">
-                <p class="uppercase tracking-widest text-[9px] mb-2 text-red-500"><i class="fa-solid fa-circle-exclamation mr-1"></i> Terdapat Kesalahan:</p>
-                <ul class="list-disc list-inside space-y-1">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+        {{-- Right Side: Form --}}
+        <div class="w-full lg:w-1/2 p-8 sm:p-12 lg:p-16 bg-slate-900 flex flex-col justify-center">
+            <div class="mb-10">
+                <a href="/" class="flex items-center gap-3 mb-8">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-600 to-slate-700 flex items-center justify-center shadow-lg shadow-teal-700/20">
+                        <i class="fa-solid fa-shoe-prints text-white text-lg"></i>
+                    </div>
+                    <span class="font-display font-bold text-2xl tracking-tight">
+                        ALBRK<span class="gradient-text">.SHOECARE</span>
+                    </span>
+                </a>
 
-        <form action="{{ route('register') }}" method="POST" class="space-y-4 md:space-y-5" id="registerForm">
-            @csrf
-            
-            {{-- Nama Lengkap --}}
-            <div>
-                <label class="block text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Nama Lengkap</label>
-                <input type="text" name="nama" value="{{ old('nama') }}" required placeholder="Masukkan nama lengkap Anda"
-                    class="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 md:px-6 md:py-4 rounded-xl md:rounded-2xl text-sm font-bold text-slate-700 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400 placeholder:font-medium">
+                <h1 class="font-display text-3xl lg:text-4xl font-bold text-white mb-2">Buat Akun</h1>
+                <p class="text-gray-400">Daftar untuk mulai reservasi treatment sepatu.</p>
             </div>
 
-            {{-- No. WhatsApp --}}
-            <div>
-                <label class="block text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">No. WhatsApp</label>
-                <input type="text" name="no_telp" value="{{ old('no_telp') }}" required placeholder="Masukkan nomor WhatsApp"
-                    class="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 md:px-6 md:py-4 rounded-xl md:rounded-2xl text-sm font-bold text-slate-700 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400 placeholder:font-medium">
-            </div>
-
-            {{-- Alamat Email --}}
-            <div>
-                <label class="block text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Alamat Email</label>
-                <input type="email" name="email" value="{{ old('email') }}" required placeholder="Masukkan alamat email Anda"
-                    class="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 md:px-6 md:py-4 rounded-xl md:rounded-2xl text-sm font-bold text-slate-700 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400 placeholder:font-medium">
-            </div>
-            
-            {{-- Grid Password --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-                <div>
-                    <label class="block text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Kata Sandi</label>
-                    <input type="password" name="password" required placeholder="Min. 8 karakter"
-                        class="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 md:px-6 md:py-4 rounded-xl md:rounded-2xl text-sm font-bold text-slate-700 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400 placeholder:font-medium">
+            @if($errors->any())
+                <div class="bg-red-900/30 border border-red-800 text-red-300 px-5 py-4 rounded-2xl mb-6 text-sm">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span class="font-semibold">Terdapat kesalahan:</span>
+                    </div>
+                    <ul class="list-disc list-inside space-y-1 text-xs">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
+            @endif
+
+            <form action="{{ route('register') }}" method="POST" class="space-y-5" id="registerForm">
+                @csrf
+
                 <div>
-                    <label class="block text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Ulangi Sandi</label>
-                    <input type="password" name="password_confirmation" required placeholder="Ketik ulang"
-                        class="w-full bg-slate-50 border border-slate-200 px-5 py-3.5 md:px-6 md:py-4 rounded-xl md:rounded-2xl text-sm font-bold text-slate-700 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400 placeholder:font-medium">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Nama Lengkap</label>
+                    <input type="text" name="nama" value="{{ old('nama') }}" required
+                        placeholder="Masukkan nama lengkap"
+                        class="input-modern w-full px-5 py-4 rounded-xl text-sm font-medium text-gray-200 placeholder:text-gray-500">
                 </div>
-            </div>
 
-            <button type="submit" id="submitBtn" 
-                class="w-full mt-4 md:mt-6 bg-blue-600 text-white py-4 rounded-xl md:rounded-2xl font-black uppercase text-[10px] md:text-xs tracking-[0.2em] hover:bg-slate-900 hover:shadow-xl hover:shadow-slate-900/20 transition-all duration-300 active:scale-[0.98]">
-                Daftar Sekarang
-            </button>
-        </form>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">No. WhatsApp</label>
+                    <input type="text" name="no_telp" value="{{ old('no_telp') }}" required
+                        placeholder="08xxxxxxxxxx"
+                        class="input-modern w-full px-5 py-4 rounded-xl text-sm font-medium text-gray-200 placeholder:text-gray-500">
+                </div>
 
-        {{-- LINK LOGIN --}}
-        <p class="text-center text-[10px] md:text-[11px] font-bold text-slate-400 mt-6 md:mt-8">
-            Sudah punya akun? <a href="{{ route('login') }}" class="text-slate-900 hover:text-blue-600 transition-colors font-black">Masuk di sini</a>
-        </p>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Email</label>
+                    <input type="email" name="email" value="{{ old('email') }}" required
+                        placeholder="nama@email.com"
+                        class="input-modern w-full px-5 py-4 rounded-xl text-sm font-medium text-gray-200 placeholder:text-gray-500">
+                </div>
 
-        {{-- TOMBOL KEMBALI DI BAWAH (Sudah dipangkas) --}}
-        <div class="mt-6 md:mt-8 text-center">
-            <a href="{{ url('/') }}" class="inline-block text-[10px] md:text-[11px] font-black text-slate-400 hover:text-slate-900 transition-colors uppercase tracking-[0.2em]">
-                Kembali
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Password</label>
+                        <input type="password" name="password" required minlength="8"
+                            placeholder="Min. 8 karakter"
+                            class="input-modern w-full px-5 py-4 rounded-xl text-sm font-medium text-gray-200 placeholder:text-gray-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Konfirmasi</label>
+                        <input type="password" name="password_confirmation" required
+                            placeholder="Ulangi password"
+                            class="input-modern w-full px-5 py-4 rounded-xl text-sm font-medium text-gray-200 placeholder:text-gray-500">
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn"
+                    class="btn-gradient w-full text-white py-4 rounded-xl font-semibold text-sm tracking-wide mt-2">
+                    <span id="btnText">Daftar Sekarang</span>
+                    <span id="btnLoading" class="hidden">
+                        <i class="fa-solid fa-spinner fa-spin mr-2"></i>Memproses...
+                    </span>
+                </button>
+            </form>
+
+            <p class="text-center text-sm text-gray-400 mt-8">
+                Sudah punya akun?
+                <a href="{{ route('login') }}" class="font-semibold text-teal-300 hover:text-teal-100 transition-colors">Masuk di sini</a>
+            </p>
+
+            <a href="{{ url('/') }}" class="block text-center text-sm text-gray-500 hover:text-gray-300 mt-4 transition-colors">
+                <i class="fa-solid fa-arrow-left mr-2"></i>Kembali ke Beranda
             </a>
         </div>
-
     </div>
 
     <script>
         const form = document.getElementById('registerForm');
         const btn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnLoading = document.getElementById('btnLoading');
+
         form.addEventListener('submit', function() {
-            btn.innerHTML = "Memproses...";
-            btn.classList.add('opacity-70', 'cursor-not-allowed');
-            // Menghapus disable agar Laravel bisa memproses form jika ada error yang dicegat browser
-            // btn.disabled = true; 
+            btnText.classList.add('hidden');
+            btnLoading.classList.remove('hidden');
+            btn.disabled = true;
+            btn.classList.add('opacity-75');
         });
     </script>
 </body>
