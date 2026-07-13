@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Pelanggan;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Reservasi\StoreReservasiRequest;
-use App\Http\Requests\Reservasi\UpdatePengembalianRequest;
+use App\Backend\Http\Requests\Reservasi\StoreReservasiRequest;
+use App\Backend\Http\Requests\Reservasi\UpdatePengembalianRequest;
 use App\ViewModels\Pelanggan\DashboardViewModel;
 use App\ViewModels\Pelanggan\PembayaranViewModel;
 use App\ViewModels\Pelanggan\ReservasiViewModel;
@@ -25,8 +25,16 @@ class ReservasiController extends Controller
     /**
      * Show dashboard
      */
-    public function dashboard(): View
+    public function dashboard(): View|RedirectResponse
     {
+        if (auth()->user()?->isSuperAdmin()) {
+            return redirect()->route('superadmin.dashboard');
+        }
+
+        if (auth()->user()?->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $data = $this->dashboardViewModel->getDashboardData();
         return view('pelanggan.dashboard', $data);
     }
@@ -47,8 +55,12 @@ class ReservasiController extends Controller
     {
         $reservasi = $this->reservasiViewModel->createReservasi($request);
 
+        if (!$reservasi || !isset($reservasi['id'])) {
+            return back()->with('error', 'Gagal membuat reservasi.');
+        }
+
         if ($request->metode_pembayaran === 'Payment Gateway') {
-            return redirect()->route('reservasi.pembayaran', $reservasi->id_reservasi);
+            return redirect()->route('reservasi.pembayaran', $reservasi['id']);
         }
 
         return redirect()->route('reservasi.riwayat')->with('success', 'Reservasi berhasil dibuat!');

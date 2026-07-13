@@ -26,6 +26,12 @@ return new class extends Migration
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        DB::table('ms_pengaturan')->insert([
+            'key' => 'tentang_image',
+            'value' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 
     /**

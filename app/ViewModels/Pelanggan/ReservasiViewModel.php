@@ -2,43 +2,48 @@
 
 namespace App\ViewModels\Pelanggan;
 
-use App\DTOs\ReservasiDTO;
-use App\Http\Requests\Reservasi\StoreReservasiRequest;
-use App\Models\Reservasi;
-use App\Repositories\Contracts\LayananRepositoryInterface;
-use App\Services\Contracts\ReservasiServiceInterface;
+use App\Backend\Services\Contracts\LayananServiceInterface;
+use App\Backend\Services\Contracts\ReservasiServiceInterface;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Collection;
+use Illuminate\Http\Request;
 
 class ReservasiViewModel
 {
     public function __construct(
-        private LayananRepositoryInterface $layananRepository,
+        private LayananServiceInterface $layananService,
         private ReservasiServiceInterface $reservasiService
     ) {}
 
     /**
-     * Get layanan list for dropdown
+     * Get available services
      */
-    public function getLayanans(): Collection
+    public function getLayanans(): array
     {
-        return $this->layananRepository->getActiveOrdered();
+        return $this->layananService->getActiveLayanan();
     }
 
     /**
-     * Create new reservasi
+     * Create new reservation
      */
-    public function createReservasi(StoreReservasiRequest $request): Reservasi
+    public function createReservasi(Request $request)
     {
-        $dto = ReservasiDTO::fromRequest($request->validated());
-        return $this->reservasiService->createReservasi($dto, auth()->id());
-    }
+        $result = $this->reservasiService->createReservasi([
+            'id_user' => auth()->id(),
+            'id_layanan' => $request->id_layanan,
+            'jumlah_sepatu' => $request->jumlah_sepatu ?? 1,
+            'metode_layanan' => $request->metode_layanan,
+            'alamat_jemput' => $request->alamat_jemput,
+            'metode_pengembalian' => $request->metode_pengembalian,
+            'wa_pengantaran' => $request->wa_pengantaran,
+            'alamat_pengantaran' => $request->alamat_pengantaran,
+            'catatan' => $request->catatan,
+            'metode_pembayaran' => $request->metode_pembayaran,
+        ]);
 
-    /**
-     * Get created reservasi with relations
-     */
-    public function getCreatedReservasiWithRelations(int $reservasiId): ?Reservasi
-    {
-        return $this->reservasiService->getReservasiForPembayaran($reservasiId);
+        if (!$result['success']) {
+            return back()->with('error', $result['message'])->withInput();
+        }
+
+        return $result['reservasi'];
     }
 }

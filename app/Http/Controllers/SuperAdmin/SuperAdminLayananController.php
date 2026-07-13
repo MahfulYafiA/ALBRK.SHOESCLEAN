@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Layanan\StoreLayananRequest;
-use App\Http\Requests\Layanan\UpdateLayananRequest;
+use App\Backend\Http\Requests\Layanan\StoreLayananRequest;
+use App\Backend\Http\Requests\Layanan\UpdateLayananRequest;
 use App\ViewModels\Admin\LayananViewModel;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

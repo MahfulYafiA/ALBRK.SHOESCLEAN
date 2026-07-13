@@ -1,0 +1,27 @@
+{
+    "folders": [
+        {
+            "name": "backend",
+            "path": "backend"
+        },
+        {
+            "name": "frontend",
+            "path": "frontend"
+        },
+        {
+            "name": "laravel-core",
+            "path": "."
+        }
+    ],
+    "settings": {
+        "files.exclude": {
+            "**/.git": true,
+            "**/vendor": true,
+            "**/node_modules": true,
+            "**/storage/framework/cache": true,
+            "**/storage/framework/sessions": true,
+            "**/storage/framework/views": true,
+            "**/storage/logs": true
+        }
+    }
+}

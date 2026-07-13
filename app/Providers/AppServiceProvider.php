@@ -2,26 +2,26 @@
 
 namespace App\Providers;
 
-use App\Repositories\Contracts\LayananRepositoryInterface;
-use App\Repositories\Contracts\PembayaranRepositoryInterface;
-use App\Repositories\Contracts\ReservasiRepositoryInterface;
-use App\Repositories\Contracts\UserRepositoryInterface;
-use App\Repositories\LayananRepository;
-use App\Repositories\PembayaranRepository;
-use App\Repositories\ReservasiRepository;
-use App\Repositories\UserRepository;
-use App\Services\Auth\AuthService;
-use App\Services\Contracts\AuthServiceInterface;
-use App\Services\Contracts\DashboardServiceInterface;
-use App\Services\Contracts\LayananServiceInterface;
-use App\Services\Contracts\MidtransServiceInterface;
-use App\Services\Contracts\ReservasiServiceInterface;
-use App\Services\Contracts\UserServiceInterface;
-use App\Services\Dashboard\DashboardService;
-use App\Services\Layanan\LayananService;
-use App\Services\Payment\MidtransService;
-use App\Services\Reservasi\ReservasiService;
-use App\Services\User\UserService;
+use App\Backend\Repositories\Contracts\LayananRepositoryInterface;
+use App\Backend\Repositories\Contracts\PembayaranRepositoryInterface;
+use App\Backend\Repositories\Contracts\ReservasiRepositoryInterface;
+use App\Backend\Repositories\Contracts\UserRepositoryInterface;
+use App\Backend\Repositories\LayananRepository;
+use App\Backend\Repositories\PembayaranRepository;
+use App\Backend\Repositories\ReservasiRepository;
+use App\Backend\Repositories\UserRepository;
+use App\Backend\Services\Auth\AuthService;
+use App\Backend\Services\Contracts\AuthServiceInterface;
+use App\Backend\Services\Contracts\DashboardServiceInterface;
+use App\Backend\Services\Contracts\LayananServiceInterface;
+use App\Backend\Services\Contracts\MidtransServiceInterface;
+use App\Backend\Services\Contracts\ReservasiServiceInterface;
+use App\Backend\Services\Contracts\UserServiceInterface;
+use App\Backend\Services\Dashboard\DashboardService;
+use App\Backend\Services\Layanan\LayananService;
+use App\Backend\Services\Payment\MidtransService;
+use App\Backend\Services\Reservasi\ReservasiService;
+use App\Backend\Services\User\UserService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

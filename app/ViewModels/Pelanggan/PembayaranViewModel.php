@@ -2,9 +2,8 @@
 
 namespace App\ViewModels\Pelanggan;
 
-use App\Models\Reservasi;
-use App\Services\Contracts\MidtransServiceInterface;
-use App\Services\Contracts\ReservasiServiceInterface;
+use App\Backend\Services\Contracts\MidtransServiceInterface;
+use App\Backend\Services\Contracts\ReservasiServiceInterface;
 
 class PembayaranViewModel
 {
@@ -14,14 +13,14 @@ class PembayaranViewModel
     ) {}
 
     /**
-     * Get reservasi for payment page
+     * Get reservasi for payment
      */
-    public function getReservasiForPayment(int $reservasiId): ?Reservasi
+    public function getReservasiForPayment(int $id): ?array
     {
-        $reservasi = $this->reservasiService->getReservasiForPembayaran($reservasiId);
+        $reservasi = $this->reservasiService->findReservasi($id);
 
-        // Check ownership
-        if ($reservasi && $reservasi->id_user !== auth()->id()) {
+        // Check if user owns this reservation
+        if ($reservasi && $reservasi['id_user'] !== auth()->id()) {
             return null;
         }
 
@@ -29,20 +28,10 @@ class PembayaranViewModel
     }
 
     /**
-     * Generate Midtrans snap token
+     * Generate Snap Token for Midtrans
      */
     public function generateSnapToken(int $reservasiId): ?string
     {
-        $reservasi = $this->getReservasiForPayment($reservasiId);
-
-        if (!$reservasi) {
-            return null;
-        }
-
-        try {
-            return $this->midtransService->generateSnapToken($reservasi);
-        } catch (\Exception $e) {
-            return null;
-        }
+        return $this->midtransService->getSnapToken($reservasiId);
     }
 }

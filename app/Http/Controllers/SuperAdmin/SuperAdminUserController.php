@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\StoreAdminRequest;
+use App\Backend\Http\Requests\Admin\StoreAdminRequest;
 use App\ViewModels\Admin\UserManagementViewModel;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -19,11 +19,13 @@ class SuperAdminUserController extends Controller
      */
     public function index(): View
     {
-        // Get all users (role 2 and 3)
-        $admins = $this->userManagementViewModel->getUsersByRole(2);
-        $pelanggans = $this->userManagementViewModel->getUsersByRole(3);
+        $users = $this->userManagementViewModel->getAllUsers();
+
+        $admins = $users->where('role', 'admin')->values();
+        $pelanggans = $users->where('role', 'pelanggan')->values();
 
         return view('superadmin.users', [
+            'users' => $users,
             'admins' => $admins,
             'pelanggans' => $pelanggans,
         ]);
@@ -34,7 +36,7 @@ class SuperAdminUserController extends Controller
      */
     public function store(StoreAdminRequest $request): RedirectResponse
     {
-        return $this->userManagementViewModel->createAdmin($request);
+        return $this->userManagementViewModel->createUser($request);
     }
 
     /**

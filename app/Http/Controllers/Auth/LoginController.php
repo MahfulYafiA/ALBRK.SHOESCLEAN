@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
-use App\Http\Requests\Auth\RegisterRequest;
-use App\Services\Contracts\AuthServiceInterface;
+use App\Backend\Http\Requests\Auth\LoginRequest;
+use App\Backend\Http\Requests\Auth\RegisterRequest;
+use App\Backend\Services\Contracts\AuthServiceInterface;
 use App\ViewModels\Auth\LoginViewModel;
 use App\ViewModels\Auth\RegisterViewModel;
 use Illuminate\Http\RedirectResponse;

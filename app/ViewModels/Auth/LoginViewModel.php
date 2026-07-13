@@ -2,12 +2,10 @@
 
 namespace App\ViewModels\Auth;
 
-use App\DTOs\UserDTO;
-use App\Http\Requests\Auth\LoginRequest;
-use App\Http\Requests\Auth\RegisterRequest;
-use App\Models\User;
-use App\Services\Contracts\AuthServiceInterface;
+use App\Backend\Services\Contracts\AuthServiceInterface;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoginViewModel
 {
@@ -16,34 +14,48 @@ class LoginViewModel
     ) {}
 
     /**
-     * Attempt login
+     * Attempt to login
      */
-    public function attemptLogin(LoginRequest $request): ?RedirectResponse
+    public function attemptLogin(Request $request): RedirectResponse
     {
-        $user = $this->authService->attemptLogin(
-            $request->email,
-            $request->password
-        );
+        $credentials = $request->only('email', 'password');
 
-        if (!$user) {
-            return redirect()->back()
-                ->withInput(['email' => $request->email])
-                ->withErrors(['email' => 'Email atau password salah.']);
+        $result = $this->authService->attemptLogin($credentials['email'], $credentials['password']);
+
+        if ($result) {
+            $user = $result['user'];
+
+            if ($user->isSuperAdmin()) {
+                return redirect()->route('superadmin.dashboard')->with('success', 'Selamat datang, ' . $user->nama . '!');
+            } elseif ($user->isAdmin()) {
+                return redirect()->route('admin.dashboard')->with('success', 'Selamat datang, ' . $user->nama . '!');
+            }
+
+            return redirect()->route('pelanggan.dashboard')->with('success', 'Selamat datang, ' . $user->nama . '!');
         }
 
-        return $this->authService->getRedirectBasedOnRole($user);
+        return back()->with('error', 'Email atau password salah.')->withInput($request->only('email'));
     }
 
     /**
-     * Handle Google OAuth callback
+     * Handle Google callback
      */
-    public function handleGoogleCallback(array $googleUser): RedirectResponse
+    public function handleGoogleCallback(array $userData): RedirectResponse
     {
-        $user = $this->authService->handleGoogleCallback($googleUser);
+        $result = $this->authService->handleGoogleCallback($userData);
 
-        // Auto login the user
-        auth()->login($user);
+        if ($result['user']) {
+            $user = $result['user'];
 
-        return $this->authService->getRedirectBasedOnRole($user);
+            if ($user->isSuperAdmin()) {
+                return redirect()->route('superadmin.dashboard')->with('success', $result['message']);
+            } elseif ($user->isAdmin()) {
+                return redirect()->route('admin.dashboard')->with('success', $result['message']);
+            }
+
+            return redirect()->route('pelanggan.dashboard')->with('success', $result['message']);
+        }
+
+        return redirect()->route('login')->with('error', 'Login dengan Google gagal.');
     }
 }

@@ -2,106 +2,85 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\Contracts\ReservasiRepositoryInterface;
-use App\Repositories\Contracts\PembayaranRepositoryInterface;
-use App\Services\Contracts\MidtransServiceInterface;
+use App\Backend\Models\Layanan;
+use App\Backend\Models\Reservasi;
+use App\Backend\Models\DetailReservasi;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class TransaksiController extends Controller
 {
-    public function __construct(
-        private ReservasiRepositoryInterface $reservasiRepository,
-        private PembayaranRepositoryInterface $pembayaranRepository
-    ) {}
-
     /**
      * Show offline transaction form
      */
-    public function createOffline()
+    public function createOffline(): View
     {
-        return view('admin.transaksi.offline');
+        $layanans = Layanan::where('status', 'Aktif')->orderBy('nama_layanan')->get();
+        return view('admin.transaksi.offline', compact('layanans'));
     }
 
     /**
      * Store offline transaction
      */
-    public function storeOffline(Request $request)
+    public function storeOffline(Request $request): RedirectResponse
     {
         $request->validate([
-            'nama' => 'required|string|max:40',
-            'no_telp' => 'nullable|string|max:15',
+            'nama' => 'required|string|max:255',
+            'no_telp' => 'nullable|string|max:20',
             'alamat' => 'nullable|string|max:200',
             'id_layanan' => 'required|exists:ms_layanan,id_layanan',
             'jumlah_sepatu' => 'required|integer|min:1',
-            'metode_layanan' => 'required|in:Drop-off,Pick-up',
-            'metode_bayar' => 'required|in:Cash,Bayar di Kasir',
-        ], [
-            'nama.required' => 'Nama pelanggan wajib diisi.',
-            'id_layanan.required' => 'Pilih layanan.',
-            'id_layanan.exists' => 'Layanan tidak ditemukan.',
-            'jumlah_sepatu.required' => 'Jumlah sepatu wajib diisi.',
-            'jumlah_sepatu.integer' => 'Jumlah sepatu harus angka.',
-            'jumlah_sepatu.min' => 'Jumlah minimal 1.',
-            'metode_layanan.required' => 'Pilih metode layanan.',
-            'metode_bayar.required' => 'Pilih metode pembayaran.',
+            'metode_layanan' => 'required|string',
+            'metode_bayar' => 'required|string',
+            'catatan' => 'nullable|string|max:500',
         ]);
 
         try {
-            return DB::transaction(function () use ($request) {
-                // Get layanan
-                $layanan = \App\Models\Layanan::findOrFail($request->id_layanan);
-                $subTotal = $layanan->harga * $request->jumlah_sepatu;
+            DB::beginTransaction();
 
-                // Create or find customer
-                $customer = \App\Models\User::where('no_telp', $request->no_telp)->first();
+            $layanan = Layanan::findOrFail($request->id_layanan);
+            $jumlahSepatu = (int) $request->jumlah_sepatu;
+            $totalHarga = $layanan->harga * $jumlahSepatu;
 
-                if (!$customer) {
-                    $customer = \App\Models\User::create([
-                        'nama' => $request->nama,
-                        'email' => 'offline_' . time() . '@local.com',
-                        'password' => bcrypt('offline_' . time()),
-                        'id_role' => 3,
-                        'no_telp' => $request->no_telp,
-                        'alamat' => $request->alamat,
-                    ]);
-                }
+            // Create reservation
+            $reservasi = Reservasi::create([
+                'id_user' => auth()->id(),
+                'nama_pelanggan' => $request->nama,
+                'no_hp' => $request->no_telp,
+                'jenis_sepatu' => '-',
+                'tanggal_reservasi' => Carbon::now()->toDateString(),
+                'jumlah_sepatu' => $jumlahSepatu,
+                'metode_layanan' => $request->metode_layanan,
+                'alamat_jemput' => $request->alamat,
+                'status' => 'di_terima',
+                'status_bayar' => 'Lunas',
+                'tanggal_bayar' => Carbon::now()->toDateTimeString(),
+                'metode_bayar' => $request->metode_bayar,
+                'total_harga' => $totalHarga,
+                'metode_masuk' => $request->metode_layanan === 'Pick-up' ? 'Jemput Kurir' : 'Antar Sendiri',
+                'metode_keluar' => 'Ambil Sendiri',
+                'catatan' => $request->catatan,
+                'status_pengambilan' => 'perlu_diambil',
+            ]);
 
-                // Create reservasi
-                $reservasi = $this->reservasiRepository->create([
-                    'id_user' => $customer->id_user,
-                    'tanggal_reservasi' => now(),
-                    'metode_layanan' => $request->metode_layanan,
-                    'alamat_jemput' => $request->alamat_jemput ?? null,
-                    'status' => 'Selesai',
-                    'status_bayar' => 'Lunas',
-                    'total_harga' => $subTotal,
-                ]);
+            // Create detail reservasi
+            DetailReservasi::create([
+                'id_reservasi' => $reservasi->id_reservasi,
+                'id_layanan' => $layanan->id_layanan,
+                'harga' => $layanan->harga,
+                'jumlah' => $jumlahSepatu,
+                'sub_total' => $totalHarga,
+            ]);
 
-                // Create detail
-                \App\Models\DetailReservasi::create([
-                    'id_reservasi' => $reservasi->id_reservasi,
-                    'id_layanan' => $layanan->id_layanan,
-                    'harga' => $layanan->harga,
-                    'jumlah' => $request->jumlah_sepatu,
-                    'sub_total' => $subTotal,
-                ]);
+            DB::commit();
 
-                // Create pembayaran
-                $this->pembayaranRepository->create([
-                    'id_reservasi' => $reservasi->id_reservasi,
-                    'metode_bayar' => $request->metode_bayar,
-                    'tanggal' => now(),
-                    'jumlah' => $subTotal,
-                ]);
-
-                return redirect()->back()->with('success', 'Transaksi offline berhasil dicatat.');
-            });
+            return redirect()->route('admin.antrean')->with('success', 'Transaksi offline berhasil disimpan!');
         } catch (\Exception $e) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Gagal menyimpan transaksi: ' . $e->getMessage());
+            DB::rollBack();
+            return back()->with('error', 'Gagal menyimpan transaksi: ' . $e->getMessage())->withInput();
         }
     }
 }

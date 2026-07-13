@@ -2,10 +2,9 @@
 
 namespace App\ViewModels\Auth;
 
-use App\DTOs\UserDTO;
-use App\Http\Requests\Auth\RegisterRequest;
-use App\Services\Contracts\AuthServiceInterface;
+use App\Backend\Services\Contracts\AuthServiceInterface;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class RegisterViewModel
 {
@@ -16,15 +15,14 @@ class RegisterViewModel
     /**
      * Register new user
      */
-    public function register(RegisterRequest $request): RedirectResponse
+    public function register(Request $request): RedirectResponse
     {
-        $dto = UserDTO::fromRegisterRequest($request->validated());
-        $user = $this->authService->register($dto);
+        $result = $this->authService->register($request->validated());
 
-        // Auto login after registration
-        auth()->login($user);
+        if ($result['user']) {
+            return redirect()->route('pelanggan.dashboard')->with('success', 'Registrasi berhasil! Selamat datang, ' . $result['user']->nama . '!');
+        }
 
-        return redirect()->route('pelanggan.dashboard')
-            ->with('success', 'Registrasi berhasil! Selamat datang di ROFF SHOECLEAN.');
+        return back()->with('error', 'Registrasi gagal. Silakan coba lagi.')->withInput();
     }
 }

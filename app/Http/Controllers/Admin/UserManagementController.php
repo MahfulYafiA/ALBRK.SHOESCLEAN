@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\StoreAdminRequest;
+use App\Backend\Http\Requests\Admin\StoreAdminRequest;
 use App\ViewModels\Admin\UserManagementViewModel;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -15,20 +15,23 @@ class UserManagementController extends Controller
     ) {}
 
     /**
-     * Show users list
+     * Show users page
      */
     public function index(): View
     {
-        $users = $this->userManagementViewModel->getUsersByRole(3);
-        return view('admin.users', compact('users'));
+        $users = $this->userManagementViewModel->getAllUsers();
+
+        $pelanggan = $users->where('role', 'pelanggan')->values();
+
+        return view('admin.users', ['users' => $pelanggan, 'pelanggan' => $pelanggan]);
     }
 
     /**
-     * Store new admin
+     * Store new user
      */
     public function store(StoreAdminRequest $request): RedirectResponse
     {
-        return $this->userManagementViewModel->createAdmin($request);
+        return $this->userManagementViewModel->createUser($request);
     }
 
     /**

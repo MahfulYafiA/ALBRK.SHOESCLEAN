@@ -2,31 +2,19 @@
 
 namespace App\ViewModels\Admin;
 
-use App\DTOs\DashboardStatsDTO;
-use App\Repositories\Contracts\ReservasiRepositoryInterface;
-use App\Services\Contracts\DashboardServiceInterface;
-use Illuminate\Support\Collection;
+use App\Backend\Services\Contracts\DashboardServiceInterface;
 
 class DashboardViewModel
 {
     public function __construct(
-        private DashboardServiceInterface $dashboardService,
-        private ReservasiRepositoryInterface $reservasiRepository
+        private DashboardServiceInterface $dashboardService
     ) {}
 
     /**
-     * Get admin dashboard data
+     * Get dashboard data for admin
      */
     public function getDashboardData(): array
     {
-        $stats = $this->dashboardService->getAdminStats();
-        $recentReservasis = $this->dashboardService->getRecentReservasi(10);
-        $antreanReservasis = $this->reservasiRepository->getPending();
-
-        return [
-            'stats' => $stats->toArray(),
-            'recent_reservasis' => $recentReservasis,
-            'antrean_reservasis' => $antreanReservasis,
-        ];
+        return $this->dashboardService->getAdminStats();
     }
 }

@@ -2,63 +2,42 @@
 
 namespace App\ViewModels\Admin;
 
-use App\Http\Requests\Admin\UpdateStatusRequest;
-use App\Models\Reservasi;
-use App\Repositories\Contracts\ReservasiRepositoryInterface;
-use App\Services\Contracts\ReservasiServiceInterface;
+use App\Backend\Models\Reservasi;
+use App\Backend\Services\Contracts\ReservasiServiceInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Collection;
+use Illuminate\Http\Request;
 
 class AntreanViewModel
 {
     public function __construct(
-        private ReservasiRepositoryInterface $reservasiRepository,
         private ReservasiServiceInterface $reservasiService
     ) {}
 
     /**
-     * Get all antrean (pending reservations)
+     * Get antrean data
      */
-    public function getAntreanList(): Collection
+    public function getAntrean(): Collection
     {
-        return $this->reservasiRepository->getPending();
+        return Reservasi::with(['user', 'detailReservasis.layanan'])
+            ->whereIn('status', ['Diajukan', 'Menunggu Konfirmasi', 'Diproses'])
+            ->orderBy('tanggal_reservasi', 'asc')
+            ->get();
     }
 
     /**
-     * Update reservasi status
+     * Update status
      */
-    public function updateStatus(UpdateStatusRequest $request, int $reservasiId): RedirectResponse
+    public function updateStatus(int $id, string $status): array
     {
-        $reservasi = $this->reservasiRepository->findById($reservasiId);
-
-        if (!$reservasi) {
-            return redirect()->back()->with('error', 'Reservasi tidak ditemukan.');
-        }
-
-        try {
-            $this->reservasiService->updateStatus($reservasiId, $request->status);
-            return redirect()->back()->with('success', 'Status reservasi berhasil diperbarui.');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal memperbarui status.');
-        }
+        return $this->reservasiService->updateStatus($id, $status);
     }
 
     /**
-     * Delete reservasi
+     * Delete reservation
      */
-    public function deleteReservasi(int $reservasiId): RedirectResponse
+    public function deleteReservasi(int $id): bool
     {
-        $reservasi = $this->reservasiRepository->findById($reservasiId);
-
-        if (!$reservasi) {
-            return redirect()->back()->with('error', 'Reservasi tidak ditemukan.');
-        }
-
-        try {
-            $this->reservasiRepository->delete($reservasiId);
-            return redirect()->back()->with('success', 'Reservasi berhasil dihapus.');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menghapus reservasi.');
-        }
+        return $this->reservasiService->deleteReservasi($id);
     }
 }

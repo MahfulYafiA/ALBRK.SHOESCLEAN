@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\User;
+use App\Backend\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
@@ -17,8 +17,8 @@ class DatabaseSeeder extends Seeder
 
         // 2. Mengisi Data User (Superadmin)
         User::create([
-            'nama'      => 'Rofi\'i (Owner)',
-            'email'     => 'superadmin@roff.com',
+            'nama'      => 'ALBRK Owner',
+            'email'     => 'superadmin@albrk.com',
             'password'  => Hash::make('admin123'),
             'id_role'   => 1, // 1 untuk Superadmin
             'no_telp'   => '08123456789',
@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
         // 3. Mengisi Data User (Admin/Kasir)
         User::create([
             'nama'      => 'Staf Kasir',
-            'email'     => 'admin@roff.com',
+            'email'     => 'admin@albrk.com',
             'password'  => Hash::make('admin123'),
             'id_role'   => 2, // 2 untuk Admin
             'no_telp'   => '08555555555',
@@ -42,6 +42,6 @@ class DatabaseSeeder extends Seeder
             'no_telp'   => '08987654321',
         ]);
 
-        $this->command->info('Database ROFF SHOECLEAN berhasil diisi data master!');
+        $this->command->info('Database ALBRK SHOESCLEAN berhasil diisi data master!');
     }
 }

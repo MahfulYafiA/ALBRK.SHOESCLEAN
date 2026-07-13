@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Layanan;
+use App\Backend\Models\Layanan;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Pelanggan\ReservasiController;
@@ -81,11 +81,11 @@ Route::middleware('auth')->group(function () {
 
     // Dashboard Redirect
     Route::get('/dashboard', function () {
-        $role = auth()->user()->id_role;
+        $user = auth()->user();
 
-        if ($role == 1) {
+        if ($user->isSuperAdmin()) {
             return redirect()->route('superadmin.dashboard');
-        } elseif ($role == 2) {
+        } elseif ($user->isAdmin()) {
             return redirect()->route('admin.dashboard');
         }
 

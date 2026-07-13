@@ -17,15 +17,14 @@ return new class extends Migration
             $table->string('email', 50)->unique(); 
             $table->string('password', 60); 
             
-            // ✅ UPDATE: Sesuaikan dengan ERD Workbench (id_role INT)
-            $table->integer('id_role')->default(3); // 1:Superadmin, 2:Admin, 3:Pelanggan
-            
             $table->string('google_id', 30)->nullable(); 
             $table->string('no_telp', 15)->nullable(); 
             $table->string('alamat', 200)->nullable(); // Sesuaikan dengan VARCHAR(200) tadi
             $table->string('foto_profil', 150)->nullable(); 
             $table->rememberToken(); 
             $table->timestamps(); 
+            $table->enum('status', ['Aktif', 'Nonaktif'])->nullable();
+            $table->enum('role', ['superadmin', 'admin', 'pelanggan'])->default('pelanggan');
         });
     }
 

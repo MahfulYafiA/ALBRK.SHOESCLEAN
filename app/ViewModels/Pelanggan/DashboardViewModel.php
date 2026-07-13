@@ -2,17 +2,14 @@
 
 namespace App\ViewModels\Pelanggan;
 
-use App\DTOs\DashboardStatsDTO;
-use App\Models\Reservasi;
-use App\Repositories\Contracts\ReservasiRepositoryInterface;
-use App\Repositories\Contracts\UserRepositoryInterface;
-use Illuminate\Support\Collection;
+use App\Backend\Services\Contracts\DashboardServiceInterface;
+use App\Backend\Services\Contracts\ReservasiServiceInterface;
 
 class DashboardViewModel
 {
     public function __construct(
-        private ReservasiRepositoryInterface $reservasiRepository,
-        private UserRepositoryInterface $userRepository
+        private DashboardServiceInterface $dashboardService,
+        private ReservasiServiceInterface $reservasiService
     ) {}
 
     /**
@@ -21,19 +18,10 @@ class DashboardViewModel
     public function getDashboardData(): array
     {
         $userId = auth()->id();
-        $reservasis = $this->reservasiRepository->getByUserId($userId);
-
-        $stats = [
-            'total_reservasi' => $reservasis->count(),
-            'reservasi_aktif' => $reservasis->whereIn('status', ['Diajukan', 'Diproses'])->count(),
-            'reservasi_selesai' => $reservasis->where('status', 'Selesai')->count(),
-            'total_pengeluaran' => $reservasis->where('status', 'Selesai')->sum('total_harga'),
-        ];
+        $stats = $this->dashboardService->getPelangganStats($userId);
 
         return [
             'stats' => $stats,
-            'recent_reservasis' => $reservasis->take(5),
-            'user' => auth()->user(),
         ];
     }
 }

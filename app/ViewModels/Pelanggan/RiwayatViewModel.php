@@ -2,70 +2,69 @@
 
 namespace App\ViewModels\Pelanggan;
 
-use App\Http\Requests\Reservasi\UpdatePengembalianRequest;
-use App\Models\Reservasi;
-use App\Repositories\Contracts\ReservasiRepositoryInterface;
-use App\Services\Contracts\ReservasiServiceInterface;
+use App\Backend\Services\Contracts\ReservasiServiceInterface;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Collection;
+use Illuminate\Http\Request;
 
 class RiwayatViewModel
 {
     public function __construct(
-        private ReservasiRepositoryInterface $reservasiRepository,
         private ReservasiServiceInterface $reservasiService
     ) {}
 
     /**
-     * Get all reservasi history for current user
+     * Get riwayat reservasi for current user
      */
-    public function getRiwayatReservasi(): Collection
+    public function getRiwayatReservasi(): array
     {
-        return $this->reservasiRepository->getByUserId(auth()->id());
+        return $this->reservasiService->getReservasiByUser(auth()->id());
     }
 
     /**
-     * Update return/delivery method
+     * Update return method
      */
-    public function updatePengembalian(UpdatePengembalianRequest $request, int $reservasiId): RedirectResponse
+    public function updatePengembalian(Request $request, int $id): RedirectResponse
     {
-        $reservasi = $this->reservasiRepository->findByIdWithRelations($reservasiId);
+        $reservasi = $this->reservasiService->findReservasi($id);
 
-        // Check ownership
-        if (!$reservasi || $reservasi->id_user !== auth()->id()) {
-            return redirect()->back()->with('error', 'Reservasi tidak ditemukan.');
+        if (!$reservasi || $reservasi['id_user'] !== auth()->id()) {
+            return back()->with('error', 'Reservasi tidak ditemukan.');
         }
 
-        try {
-            $this->reservasiService->setReturnMethod($reservasiId, $request->validated());
-            return redirect()->back()->with('success', 'Metode pengembalian berhasil diperbarui.');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal memperbarui metode pengembalian.');
+        $result = $this->reservasiService->updateReservasi($id, [
+            'metode_pengembalian' => $request->metode_pengembalian,
+            'wa_pengantaran' => $request->wa_pengantaran,
+            'alamat_pengantaran' => $request->alamat_pengantaran,
+        ]);
+
+        if ($result['success']) {
+            return back()->with('success', 'Metode pengembalian berhasil diperbarui.');
         }
+
+        return back()->with('error', $result['message']);
     }
 
     /**
-     * Cancel reservasi
+     * Cancel reservation
      */
-    public function cancelReservasi(int $reservasiId): RedirectResponse
+    public function cancelReservasi(int $id): RedirectResponse
     {
-        $reservasi = $this->reservasiRepository->findById($reservasiId);
+        $reservasi = $this->reservasiService->findReservasi($id);
 
-        // Check ownership
-        if (!$reservasi || $reservasi->id_user !== auth()->id()) {
-            return redirect()->back()->with('error', 'Reservasi tidak ditemukan.');
+        if (!$reservasi || $reservasi['id_user'] !== auth()->id()) {
+            return back()->with('error', 'Reservasi tidak ditemukan.');
         }
 
-        // Only allow cancel for Diajukan status
-        if ($reservasi->status !== 'Diajukan') {
-            return redirect()->back()->with('error', 'Reservasi tidak dapat dibatalkan.');
+        if (!in_array($reservasi['status'], ['menunggu', 'di_terima'])) {
+            return back()->with('error', 'Reservasi tidak dapat dibatalkan.');
         }
 
-        try {
-            $this->reservasiService->cancelReservasi($reservasiId);
-            return redirect()->back()->with('success', 'Reservasi berhasil dibatalkan.');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal membatalkan reservasi.');
+        $result = $this->reservasiService->cancelReservasi($id);
+
+        if ($result) {
+            return redirect()->route('reservasi.riwayat')->with('success', 'Reservasi berhasil dibatalkan.');
         }
+
+        return back()->with('error', 'Gagal membatalkan reservasi.');
     }
 }

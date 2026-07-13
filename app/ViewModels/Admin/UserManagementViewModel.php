@@ -2,79 +2,56 @@
 
 namespace App\ViewModels\Admin;
 
-use App\Http\Requests\Admin\StoreAdminRequest;
-use App\Models\User;
-use App\Repositories\Contracts\UserRepositoryInterface;
-use App\Services\Contracts\UserServiceInterface;
+use App\Backend\Models\User;
+use App\Backend\Services\Contracts\UserServiceInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Collection;
+use Illuminate\Http\Request;
 
 class UserManagementViewModel
 {
     public function __construct(
-        private UserRepositoryInterface $userRepository,
         private UserServiceInterface $userService
     ) {}
 
     /**
      * Get all users by role
      */
-    public function getUsersByRole(int $roleId): Collection
+    public function getAllUsers(): Collection
     {
-        return $this->userRepository->getByRole($roleId);
+        return User::orderBy('created_at', 'desc')->get();
     }
 
     /**
-     * Get all admin users (role 2)
+     * Create new user
      */
-    public function getAdminUsers(): Collection
+    public function createUser(Request $request): RedirectResponse
     {
-        return $this->userRepository->getAllAdmin();
-    }
+        $result = $this->userService->createUser($request->all());
 
-    /**
-     * Create new admin user
-     */
-    public function createAdmin(StoreAdminRequest $request): RedirectResponse
-    {
-        try {
-            $dto = new \App\DTOs\UserDTO(
-                nama: $request->nama,
-                email: $request->email,
-                password: bcrypt($request->password),
-                idRole: (int) $request->id_role,
-                noTelp: $request->no_telp
-            );
-
-            $this->userService->createAdmin($dto);
-
-            return redirect()->back()->with('success', 'Akun admin berhasil dibuat.');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal membuat akun admin.');
+        if ($result['success']) {
+            return back()->with('success', $result['message']);
         }
+
+        return back()->with('error', $result['message'])->withInput();
     }
 
     /**
      * Delete user
      */
-    public function deleteUser(int $userId): RedirectResponse
+    public function deleteUser(int $id): RedirectResponse
     {
-        $user = $this->userRepository->findById($userId);
-
-        if (!$user) {
-            return redirect()->back()->with('error', 'User tidak ditemukan.');
+        // Prevent deleting own account
+        if ($id === auth()->id()) {
+            return back()->with('error', 'Anda tidak dapat menghapus akun sendiri.');
         }
 
-        // Prevent self-delete
-        if ($user->id_user === auth()->id()) {
-            return redirect()->back()->with('error', 'Tidak dapat menghapus akun sendiri.');
+        $result = $this->userService->deleteUser($id);
+
+        if ($result) {
+            return back()->with('success', 'User berhasil dihapus.');
         }
 
-        try {
-            $this->userService->deleteUserWithRelations($user);
-            return redirect()->back()->with('success', 'User berhasil dihapus.');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menghapus user.');
-        }
+        return back()->with('error', 'Gagal menghapus user.');
     }
 }

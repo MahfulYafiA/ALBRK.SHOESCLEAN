@@ -2,20 +2,17 @@
 
 namespace App\ViewModels\Admin;
 
-use App\DTOs\LayananDTO;
-use App\Http\Requests\Layanan\StoreLayananRequest;
-use App\Http\Requests\Layanan\UpdateLayananRequest;
-use App\Models\Layanan;
-use App\Repositories\Contracts\LayananRepositoryInterface;
-use App\Services\Contracts\LayananServiceInterface;
+use App\Backend\Models\Layanan;
+use App\Backend\Services\Contracts\LayananServiceInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class LayananViewModel
 {
     public function __construct(
-        private LayananRepositoryInterface $layananRepository,
         private LayananServiceInterface $layananService
     ) {}
 
@@ -24,57 +21,35 @@ class LayananViewModel
      */
     public function getAllLayanan(): Collection
     {
-        return $this->layananRepository->getAll();
+        return Layanan::orderBy('nama_layanan')->get();
     }
 
     /**
      * Create new layanan
      */
-    public function createLayanan(StoreLayananRequest $request): RedirectResponse
+    public function createLayanan(Request $request): RedirectResponse
     {
-        try {
-            $gambar = null;
-            if ($request->hasFile('gambar')) {
-                $gambar = $request->file('gambar')->store('layanans', 'public');
-            }
+        $result = $this->layananService->createLayanan($request->all());
 
-            $dto = LayananDTO::fromRequest($request->validated(), $gambar);
-            $this->layananService->create($dto);
-
-            return redirect()->back()->with('success', 'Layanan berhasil ditambahkan.');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menambahkan layanan.');
+        if ($result['success']) {
+            return back()->with('success', $result['message']);
         }
+
+        return back()->with('error', $result['message'])->withInput();
     }
 
     /**
      * Update layanan
      */
-    public function updateLayanan(UpdateLayananRequest $request, int $id): RedirectResponse
+    public function updateLayanan(Request $request, int $id): RedirectResponse
     {
-        $layanan = $this->layananRepository->findById($id);
+        $result = $this->layananService->updateLayanan($id, $request->all());
 
-        if (!$layanan) {
-            return redirect()->back()->with('error', 'Layanan tidak ditemukan.');
+        if ($result['success']) {
+            return back()->with('success', $result['message']);
         }
 
-        try {
-            $gambar = $layanan->gambar;
-            if ($request->hasFile('gambar')) {
-                // Delete old image
-                if ($layanan->gambar) {
-                    \Illuminate\Support\Facades\Storage::disk('public')->delete($layanan->gambar);
-                }
-                $gambar = $request->file('gambar')->store('layanans', 'public');
-            }
-
-            $dto = LayananDTO::fromRequest($request->validated(), $gambar);
-            $this->layananService->update($id, $dto);
-
-            return redirect()->back()->with('success', 'Layanan berhasil diperbarui.');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal memperbarui layanan.');
-        }
+        return back()->with('error', $result['message']);
     }
 
     /**
@@ -82,18 +57,13 @@ class LayananViewModel
      */
     public function deleteLayanan(int $id): RedirectResponse
     {
-        $layanan = $this->layananRepository->findById($id);
+        $result = $this->layananService->deleteLayanan($id);
 
-        if (!$layanan) {
-            return redirect()->back()->with('error', 'Layanan tidak ditemukan.');
+        if ($result) {
+            return back()->with('success', 'Layanan berhasil dihapus.');
         }
 
-        try {
-            $this->layananService->delete($id);
-            return redirect()->back()->with('success', 'Layanan berhasil dihapus.');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menghapus layanan.');
-        }
+        return back()->with('error', 'Gagal menghapus layanan.');
     }
 
     /**
@@ -101,24 +71,106 @@ class LayananViewModel
      */
     public function updateHeroBanner(Request $request): RedirectResponse
     {
+        // Validasi input
+        if (!$request->hasFile('hero_image')) {
+            return back()->with('error', 'Tidak ada file yang dipilih.');
+        }
+
+        $file = $request->file('hero_image');
+
+        // Validasi file
+        if (!$file->isValid()) {
+            return back()->with('error', 'File upload tidak valid.');
+        }
+
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+        if (!in_array($file->getMimeType(), $allowedMimes)) {
+            return back()->with('error', 'Format file harus JPG, PNG, GIF, atau WebP.');
+        }
+
+        if ($file->getSize() > 2 * 1024 * 1024) {
+            return back()->with('error', 'Ukuran file maksimal 2MB.');
+        }
+
         try {
-            $this->layananService->updateHeroBanner($request);
-            return redirect()->back()->with('success', 'Banner berhasil diperbarui.');
+            // Hapus gambar lama jika ada
+            $oldSetting = DB::table('ms_pengaturan')->where('key', 'hero_image')->first();
+            if ($oldSetting && $oldSetting->value) {
+                $oldPath = storage_path('app/public/' . $oldSetting->value);
+                if (file_exists($oldPath)) {
+                    unlink($oldPath);
+                }
+            }
+
+            // Generate nama unik
+            $filename = 'hero_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+            // Simpan ke storage/app/public/images/
+            $path = $file->storeAs('images', $filename, 'public');
+
+            // Update atau create di database
+            DB::table('ms_pengaturan')->updateOrInsert(
+                ['key' => 'hero_image'],
+                [
+                    'value' => 'images/' . $filename,
+                    'updated_at' => now()
+                ]
+            );
+
+            return back()->with('success', 'Hero banner berhasil diperbarui!');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal memperbarui banner.');
+            return back()->with('error', 'Gagal mengupload banner: ' . $e->getMessage());
         }
     }
 
     /**
-     * Update tentang kami image
+     * Update tentang kami
      */
     public function updateTentangKami(Request $request): RedirectResponse
     {
+        if (!$request->hasFile('tentang_image')) {
+            return back()->with('error', 'Tidak ada file yang dipilih.');
+        }
+
+        $file = $request->file('tentang_image');
+
+        if (!$file->isValid()) {
+            return back()->with('error', 'File upload tidak valid.');
+        }
+
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+        if (!in_array($file->getMimeType(), $allowedMimes)) {
+            return back()->with('error', 'Format file harus JPG, PNG, GIF, atau WebP.');
+        }
+
         try {
-            $this->layananService->updateTentangKami($request);
-            return redirect()->back()->with('success', 'Gambar berhasil diperbarui.');
+            // Hapus gambar lama jika ada
+            $oldSetting = DB::table('ms_pengaturan')->where('key', 'tentang_image')->first();
+            if ($oldSetting && $oldSetting->value) {
+                $oldPath = storage_path('app/public/' . $oldSetting->value);
+                if (file_exists($oldPath)) {
+                    unlink($oldPath);
+                }
+            }
+
+            // Generate nama unik
+            $filename = 'tentang_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+            // Simpan ke storage/app/public/images/
+            $path = $file->storeAs('images', $filename, 'public');
+
+            // Update atau create di database
+            DB::table('ms_pengaturan')->updateOrInsert(
+                ['key' => 'tentang_image'],
+                [
+                    'value' => 'images/' . $filename,
+                    'updated_at' => now()
+                ]
+            );
+
+            return back()->with('success', 'Gambar tentang kami berhasil diperbarui!');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal memperbarui gambar.');
+            return back()->with('error', 'Gagal mengupload gambar: ' . $e->getMessage());
         }
     }
 }

@@ -27,8 +27,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'admin@roffshoeclean.com'),
-        'name' => env('MAIL_FROM_NAME', 'ROFF SHOECLEAN Support'),
+        'address' => env('MAIL_FROM_ADDRESS', 'admin@albrkshoesclean.com'),
+        'name' => env('MAIL_FROM_NAME', 'ALBRK SHOESCLEAN Support'),
     ],
 
 ];
