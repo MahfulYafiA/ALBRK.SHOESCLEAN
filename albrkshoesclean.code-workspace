@@ -1,15 +1,7 @@
 {
     "folders": [
         {
-            "name": "backend",
-            "path": "backend"
-        },
-        {
-            "name": "frontend",
-            "path": "frontend"
-        },
-        {
-            "name": "laravel-core",
+            "name": "albrkshoesclean",
             "path": "."
         }
     ],

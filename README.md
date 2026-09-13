@@ -28,8 +28,7 @@ Penjelasan singkat:
 
 ```text
 albrkshoesclean/
-|-- backend/                  # Backend Laravel dan layer business logic
-|-- frontend/                 # Asset frontend, Vite, dan target view
+|-- backend/                  # Satu aplikasi Laravel (MVVM, service, repository, dan view)
 |-- app/                      # Core aplikasi Laravel
 |-- bootstrap/                # Bootstrap Laravel
 |-- config/                   # Konfigurasi Laravel
@@ -42,15 +41,17 @@ albrkshoesclean/
 `-- composer.json
 ```
 
-Catatan: project ini adalah Laravel monolith modular, bukan microservice dan bukan SPA penuh. Pemisahan frontend/backend dilakukan untuk memperjelas layer, command development, dan tanggung jawab kode.
+Catatan: project ini adalah Laravel monolith modular. View Blade dan asset Vite berada di dalam aplikasi Laravel sehingga tidak ada server frontend terpisah.
 
 ## Menjalankan Project Untuk Development
 
-Terminal backend:
+Jalankan satu perintah dari folder Laravel:
 
 ```powershell
 cd backend
-php artisan serve
+composer install
+npm install
+composer run dev
 ```
 
 Jika Windows menolak temporary file, jalankan:
@@ -60,27 +61,7 @@ cd backend
 .\start-backend.ps1
 ```
 
-Terminal frontend:
-
-```powershell
-cd frontend
-npm install
-npm run dev
-```
-
-Website dapat dibuka melalui:
-
-```text
-http://localhost:5173
-```
-
-atau langsung melalui Laravel:
-
-```text
-http://127.0.0.1:8000
-```
-
-Untuk demo tugas akhir, jalur paling stabil adalah `http://127.0.0.1:8000` dengan Vite tetap berjalan di terminal frontend.
+Website tersedia di `http://127.0.0.1:8000`. Script tersebut menjalankan Laravel dan Vite bersamaan serta kompatibel dengan Windows (Laravel Pail membutuhkan ekstensi `pcntl` yang umumnya hanya tersedia di Unix).
 
 ## Database
 
@@ -112,7 +93,7 @@ php artisan migrate:fresh --seed
 Build asset frontend:
 
 ```powershell
-cd frontend
+cd backend
 npm install
 npm run build
 ```
