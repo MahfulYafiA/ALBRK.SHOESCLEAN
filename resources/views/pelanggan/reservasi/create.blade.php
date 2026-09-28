@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buat Reservasi - ALBRK.SHOECARE</title>
+    <title>Buat Reservasi - ALBRK.SHOESCARE</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -90,6 +90,9 @@
         }
         input[type="radio"]:checked + div .radio-dot { opacity: 1; transform: scale(1); }
         input[type="radio"]:checked + div h4 { color: #111111; }
+        input[type="checkbox"]:checked + div { border-color: #111111; background-color: rgba(17, 17, 17, 0.03); box-shadow: 0 0 15px rgba(17, 17, 17, 0.1); }
+        input[type="checkbox"]:checked + div .radio-dot { opacity: 1; transform: scale(1); }
+        input[type="checkbox"]:checked + div .selection-indicator { background: #111111; border-color: #111111; }
 
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
@@ -99,39 +102,30 @@
         ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 3px; }
     </style>
 </head>
-<body class="antialiased selection:bg-neutral-900 selection:text-white flex flex-col min-h-screen overflow-x-hidden relative">
+<body class="antialiased selection:bg-neutral-900 selection:text-white flex flex-col h-screen overflow-hidden relative">
 
     <div class="noise"></div>
 
-    <header class="sticky top-0 z-50 glass border-b border-gray-200 transition-all duration-300 px-6 md:px-12 py-4 flex justify-between items-center shrink-0">
+    <header class="sticky top-0 z-50 glass border-b border-gray-300 transition-all duration-300 px-6 md:px-12 py-4 flex justify-between items-center shrink-0">
         <div class="flex items-center gap-3 md:gap-4">
-            <a href="{{ url('/dashboard') }}" class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-white border border-gray-200 text-gray-400 hover:text-gray-700 hover:bg-gray-50 transition-all flex items-center justify-center shadow-sm group active:scale-95">
-                <i class="fa-solid fa-arrow-left text-sm group-hover:-translate-x-1 transition-transform"></i>
-            </a>
             <h1 class="block font-display font-bold text-xl md:text-2xl uppercase tracking-tighter italic text-gray-900 leading-tight">
-                ALBRK<span class="text-gray-400">.SHOECARE</span>
+                Form <span class="text-gray-400">Reservasi</span>
             </h1>
-        </div>
-        <div class="text-right shrink-0">
-            <p class="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-gray-400 leading-none mb-1">Pemesanan</p>
-            <p class="font-bold text-xs md:text-sm text-gray-900 uppercase tracking-widest">Sesi Baru</p>
         </div>
     </header>
 
-    <main class="flex-1 w-full relative z-10 p-4 md:p-6 lg:p-10 hero-bg">
+    <main class="flex-1 min-h-0 w-full overflow-y-auto relative z-10 p-4 md:p-6 lg:p-8 hero-bg">
 
         <div class="max-w-5xl mx-auto">
 
-            <div class="mb-8 md:mb-10 text-center px-2">
-                <div class="inline-flex items-center gap-2 bg-white border border-gray-200 px-4 py-1.5 rounded-full mb-4 shadow-sm">
-                    <span class="w-1.5 h-1.5 rounded-full bg-neutral-900 animate-pulse"></span>
-                    <p class="text-[8px] md:text-[9px] font-bold text-gray-500 uppercase tracking-[0.4em]">Order & Booking</p>
+            @if (session('error'))
+                <div class="mb-8 bg-red-50 border border-red-200 text-red-700 p-6 rounded-3xl shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-circle-exclamation text-lg"></i>
+                        <p class="text-sm font-semibold">{{ session('error') }}</p>
+                    </div>
                 </div>
-                <h1 class="text-3xl md:text-5xl font-display font-bold text-gray-900 tracking-tighter mb-2 uppercase italic leading-none">
-                    Form <span class="italic font-semibold text-gray-500">Reservasi.</span>
-                </h1>
-                <p class="text-gray-500 font-medium text-xs md:text-sm mt-2">Pilih jenis layanan dan atur detail pesanan sepatu Anda.</p>
-            </div>
+            @endif
 
             @if ($errors->any())
                 <div class="mb-8 md:mb-10 bg-red-50 border border-red-200 text-red-700 p-6 rounded-3xl shadow-sm">
@@ -147,31 +141,33 @@
                 </div>
             @endif
 
-            <form id="formReservasi" action="{{ route('reservasi.store') }}" method="POST" class="glass-card rounded-3xl p-6 md:p-10 lg:p-14 space-y-10 md:space-y-12">
+            <form id="formReservasi" action="{{ route('reservasi.store') }}" method="POST" class="glass-card rounded-3xl p-5 md:p-8 lg:p-10 space-y-8 md:space-y-10">
                 @csrf
 
                 {{-- STEP 1: PILIH LAYANAN --}}
                 <div>
                     <h3 class="font-display font-bold text-base md:text-lg uppercase tracking-widest mb-6 flex items-center gap-3 text-gray-900">
                         <span class="bg-neutral-900 text-white w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center text-[10px] md:text-xs shadow-lg">1</span>
-                        Pilih Jenis Layanan
+                        Pilih Jenis Layanan <span class="text-xs normal-case tracking-normal text-gray-500">(bisa pilih lebih dari satu)</span>
                     </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-5">
                         @foreach($layanans as $l)
                         @php
-                            $idLayanan = data_get($l, 'id_layanan');
+                            $idLayanan = data_get($l, 'id', data_get($l, 'id_layanan'));
                             $namaLayanan = data_get($l, 'nama_layanan');
                             $hargaLayanan = data_get($l, 'harga', 0);
                             $deskripsiLayanan = data_get($l, 'deskripsi');
+                            $selectedLayanans = (array) old('id_layanans', request('id_layanans', $loop->first ? [$idLayanan] : []));
+                            $isSelected = in_array((string) $idLayanan, array_map('strval', $selectedLayanans), true);
                         @endphp
                         <label class="relative cursor-pointer group">
-                            <input type="radio" name="id_layanan" value="{{ $idLayanan }}" data-harga="{{ $hargaLayanan }}" class="sr-only layanan-radio" {{ old('id_layanan') == $idLayanan ? 'checked' : '' }} required>
+                            <input type="checkbox" name="id_layanans[]" value="{{ $idLayanan }}" data-harga="{{ $hargaLayanan }}" class="sr-only layanan-checkbox" {{ $isSelected ? 'checked' : '' }}>
                             <div class="border-2 border-gray-200 bg-white/60 rounded-2xl p-5 md:p-6 hover:border-gray-400 hover:bg-white transition-all h-full flex flex-col justify-between">
                                 <div>
                                     <div class="flex justify-between items-start mb-3 gap-2">
                                         <h4 class="font-display font-bold text-lg md:text-xl text-gray-800 italic tracking-tight leading-tight transition-colors">{{ $namaLayanan }}</h4>
-                                        <div class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center mt-1 group-hover:border-gray-400 bg-white shrink-0">
-                                            <div class="radio-dot w-2.5 h-2.5 bg-neutral-900 rounded-full opacity-0 transform scale-0 transition-all duration-300"></div>
+                                        <div class="selection-indicator w-5 h-5 rounded-md border-2 border-gray-300 flex items-center justify-center mt-1 group-hover:border-gray-400 bg-white shrink-0 transition-colors">
+                                            <i class="fa-solid fa-check radio-dot text-[10px] text-white opacity-0 transform scale-0 transition-all duration-300"></i>
                                         </div>
                                     </div>
                                     <p class="text-[10px] md:text-[11px] text-gray-500 font-medium mb-5 leading-relaxed line-clamp-3">{{ $deskripsiLayanan }}</p>
@@ -238,15 +234,59 @@
                     </div>
                 </div>
 
-                {{-- STEP 4: PEMBAYARAN --}}
+                {{-- STEP 4: METODE PENGEMBALIAN --}}
                 <div>
                     <h3 class="font-display font-bold text-base md:text-lg uppercase tracking-widest mb-6 flex items-center gap-3 text-gray-900">
                         <span class="bg-neutral-900 text-white w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center text-[10px] md:text-xs shadow-lg">4</span>
+                        Metode Pengembalian
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
+                        <label class="relative cursor-pointer group">
+                            <input type="radio" name="metode_pengembalian" value="diambil" class="sr-only return-radio" {{ old('metode_pengembalian', 'diambil') == 'diambil' ? 'checked' : '' }} required>
+                            <div class="border-2 border-gray-200 bg-white/60 rounded-2xl p-6 md:p-8 hover:border-gray-400 hover:bg-white transition-all h-full">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="font-display font-bold text-lg md:text-xl text-gray-800 italic tracking-tight">Ambil di Toko</h4>
+                                    <div class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center group-hover:border-gray-400 bg-white shrink-0">
+                                        <div class="radio-dot w-2.5 h-2.5 bg-neutral-900 rounded-full opacity-0 transform scale-0 transition-all duration-300"></div>
+                                    </div>
+                                </div>
+                                <p class="text-[10px] md:text-[11px] text-gray-500 font-medium">Sepatu diambil langsung di toko setelah selesai dicuci.</p>
+                            </div>
+                        </label>
+                        <label class="relative cursor-pointer group">
+                            <input type="radio" name="metode_pengembalian" value="diantar" class="sr-only return-radio" {{ old('metode_pengembalian') == 'diantar' ? 'checked' : '' }}>
+                            <div class="border-2 border-gray-200 bg-white/60 rounded-2xl p-6 md:p-8 hover:border-gray-400 hover:bg-white transition-all h-full">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="font-display font-bold text-lg md:text-xl text-gray-800 italic tracking-tight">Diantar ke Alamat</h4>
+                                    <div class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center group-hover:border-gray-400 bg-white shrink-0">
+                                        <div class="radio-dot w-2.5 h-2.5 bg-neutral-900 rounded-full opacity-0 transform scale-0 transition-all duration-300"></div>
+                                    </div>
+                                </div>
+                                <p class="text-[10px] md:text-[11px] text-gray-500 font-medium">Kurir mengantarkan sepatu selesai ke alamat Anda.</p>
+                            </div>
+                        </label>
+                    </div>
+                    <div id="areaPengantaran" class="hidden mt-5 grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label for="wa_pengantaran" class="block text-[9px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-3 ml-2">No. WhatsApp Penerima</label>
+                            <input type="tel" id="wa_pengantaran" name="wa_pengantaran" value="{{ old('wa_pengantaran', auth()->user()->no_telp) }}" placeholder="Contoh: 08xxxxxxxxxx" class="input-modern w-full text-gray-900 text-sm rounded-2xl p-4 md:p-5 font-medium shadow-sm">
+                        </div>
+                        <div>
+                            <label for="alamat_pengantaran" class="block text-[9px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-3 ml-2">Alamat Pengantaran</label>
+                            <textarea id="alamat_pengantaran" name="alamat_pengantaran" rows="2" placeholder="Masukkan alamat lengkap pengantaran..." class="input-modern w-full text-gray-900 text-sm rounded-2xl p-4 md:p-5 font-medium resize-none shadow-sm">{{ old('alamat_pengantaran', auth()->user()->alamat) }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- STEP 4: PEMBAYARAN --}}
+                <div>
+                    <h3 class="font-display font-bold text-base md:text-lg uppercase tracking-widest mb-6 flex items-center gap-3 text-gray-900">
+                        <span class="bg-neutral-900 text-white w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center text-[10px] md:text-xs shadow-lg">5</span>
                         Metode Pembayaran
                     </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
                         <label class="relative cursor-pointer group">
-                            <input type="radio" name="metode_pembayaran" value="Bayar di Toko" class="sr-only payment-radio" {{ old('metode_pembayaran') == 'Bayar di Toko' ? 'checked' : '' }} required>
+                            <input type="radio" name="metode_pembayaran" value="cash" class="sr-only payment-radio" {{ in_array(old('metode_pembayaran', 'cash'), ['cash', 'Bayar di Toko'], true) ? 'checked' : '' }} required>
                             <div class="border-2 border-gray-200 bg-white/60 rounded-2xl p-6 md:p-8 hover:border-gray-400 hover:bg-white transition-all h-full">
                                 <div class="flex justify-between items-start mb-2">
                                     <h4 class="font-display font-bold text-lg md:text-xl text-gray-800 italic tracking-tight transition-colors">Bayar di Kasir</h4>
@@ -311,6 +351,10 @@
         </div>
     </main>
 
+    <footer class="bg-white border-t border-gray-300 py-6 px-6 text-center shrink-0">
+        <p class="text-gray-500 text-xs">&copy; 2026 <span class="font-semibold text-gray-600">ALBRK.SHOESCARE</span></p>
+    </footer>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const form = document.getElementById('formReservasi');
@@ -323,19 +367,21 @@
 
             const areaAlamat = document.getElementById('areaAlamat');
             const inputAlamat = document.getElementById('alamat_jemput');
+            const areaPengantaran = document.getElementById('areaPengantaran');
+            const inputWaPengantaran = document.getElementById('wa_pengantaran');
+            const inputAlamatPengantaran = document.getElementById('alamat_pengantaran');
 
-            const layananRadios = document.querySelectorAll('input[name="id_layanan"]');
+            const layananCheckboxes = document.querySelectorAll('input[name="id_layanans[]"]');
             const paymentRadios = document.querySelectorAll('input[name="metode_pembayaran"]');
             const deliveryRadios = document.querySelectorAll('input[name="metode_layanan"]');
+            const returnRadios = document.querySelectorAll('input[name="metode_pengembalian"]');
 
             function hitungTotal() {
                 let harga = 0;
                 let jumlah = parseInt(jumlahInput.value) || 1;
-                const selectedLayanan = document.querySelector('input[name="id_layanan"]:checked');
-
-                if (selectedLayanan) {
-                    harga = parseInt(selectedLayanan.getAttribute('data-harga'));
-                }
+                layananCheckboxes.forEach(layanan => {
+                    if (layanan.checked) harga += parseInt(layanan.getAttribute('data-harga')) || 0;
+                });
 
                 let total = harga * jumlah;
                 totalText.innerText = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(total);
@@ -352,12 +398,20 @@
                 }
             }
 
+            function togglePengantaranArea() {
+                const selectedReturn = document.querySelector('input[name="metode_pengembalian"]:checked');
+                const needsDelivery = selectedReturn && selectedReturn.value === 'diantar';
+                areaPengantaran.classList.toggle('hidden', !needsDelivery);
+                inputWaPengantaran.required = needsDelivery;
+                inputAlamatPengantaran.required = needsDelivery;
+            }
+
             function toggleUploadArea() {
                 const selectedPayment = document.querySelector('input[name="metode_pembayaran"]:checked');
                 if (selectedPayment && selectedPayment.value === 'Payment Gateway') {
                     areaTransfer.classList.remove('hidden');
                     areaBayarToko.classList.add('hidden');
-                } else if (selectedPayment && selectedPayment.value === 'Bayar di Toko') {
+                } else if (selectedPayment && selectedPayment.value === 'cash') {
                     areaBayarToko.classList.remove('hidden');
                     areaTransfer.classList.add('hidden');
                 } else {
@@ -374,15 +428,18 @@
                 }, 50);
             });
 
-            layananRadios.forEach(radio => radio.addEventListener('change', hitungTotal));
+            layananCheckboxes.forEach(checkbox => checkbox.addEventListener('change', hitungTotal));
             jumlahInput.addEventListener('input', hitungTotal);
             paymentRadios.forEach(radio => radio.addEventListener('change', toggleUploadArea));
             deliveryRadios.forEach(radio => radio.addEventListener('change', toggleAlamatArea));
+            returnRadios.forEach(radio => radio.addEventListener('change', togglePengantaranArea));
 
             hitungTotal();
             toggleAlamatArea();
+            togglePengantaranArea();
             toggleUploadArea();
         });
     </script>
 </body>
 </html>
+

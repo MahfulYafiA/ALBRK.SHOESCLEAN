@@ -7,6 +7,7 @@ use App\Http\Requests\Profile\UpdateProfilePhotoRequest;
 use App\Http\Requests\Profile\UpdateProfileRequest;
 use App\Services\Contracts\ProfileServiceInterface;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -15,6 +16,14 @@ class ProfileController extends Controller
     public function index()
     {
         return view('profil.index', ['user' => Auth::user()]);
+    }
+
+    public function foto()
+    {
+        $path = Auth::user()->foto_profil;
+        abort_unless($path && Storage::disk('public')->exists($path), 404);
+
+        return response()->file(Storage::disk('public')->path($path));
     }
 
     public function update(UpdateProfileRequest $request)

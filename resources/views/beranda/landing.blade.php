@@ -25,8 +25,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALBRK.SHOECARE - Perawatan Sepatu Premium</title>
-    <meta name="description" content="ALBRK.SHOECARE - Solusi perawatan sepatu premium di Kabupaten Madiun. Fast Clean, Deep Clean, Unyellowing, dan treatment lainnya.">
+    <title>ALBRK.SHOESCARE - Perawatan Sepatu Premium</title>
+    <meta name="description" content="ALBRK.SHOESCARE - Solusi perawatan sepatu premium di Kabupaten Madiun. Fast Clean, Deep Clean, Unyellowing, dan treatment lainnya.">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -124,7 +124,7 @@
 
         .hero-bg {
             background:
-                linear-gradient(180deg, rgba(245, 245, 245, 0.96) 0%, rgba(255, 255, 255, 0.98) 100%);
+                linear-gradient(180deg, rgba(229, 229, 229, 0.96) 0%, rgba(212, 212, 212, 0.98) 100%);
         }
 
         @keyframes marquee-scroll {
@@ -132,7 +132,11 @@
             to { transform: translateX(-50%); }
         }
         .marquee-track {
-            animation: marquee-scroll 40s linear infinite;
+            animation: marquee-scroll 20s linear infinite;
+            width: max-content;
+        }
+        .marquee-track > span {
+            flex: 0 0 auto;
         }
 
         .watermark-text {
@@ -151,12 +155,12 @@
 
         /* Teks dekoratif bergerak diagonal dari kiri-bawah ke kanan-atas. */
         .diagonal-watermark {
-            transform: rotate(-18deg) scale(1.35);
+            transform: translateY(-48px) rotate(-18deg) scale(1.35);
             transform-origin: center;
         }
 
         @media (max-width: 640px) {
-            .diagonal-watermark { transform: rotate(-16deg) scale(1.7); }
+            .diagonal-watermark { transform: translateY(-28px) rotate(-16deg) scale(1.7); }
         }
 
         .hero-photo-bg {
@@ -238,7 +242,7 @@
 
                 <a href="/" class="flex items-center gap-3 group">
                     <span class="font-display font-bold text-xl lg:text-2xl tracking-tight text-neutral-950">
-                        ALBRK<span class="text-neutral-500">.SHOECARE</span>
+                        ALBRK<span class="text-neutral-500">.SHOESCARE</span>
                     </span>
                 </a>
 
@@ -252,16 +256,27 @@
 
                 <div class="flex items-center gap-3">
                     @auth
-                        <a href="{{ url('/dashboard') }}" class="hidden sm:flex items-center gap-3 bg-white border border-neutral-200 px-4 py-2.5 rounded-full hover:border-neutral-400 hover:shadow-lg transition-all">
-                            <div class="w-8 h-8 rounded-full bg-neutral-900 flex items-center justify-center">
-                                @if(auth()->user()->foto_profil)
-                                    <img src="{{ asset('storage/' . auth()->user()->foto_profil) }}" class="w-full h-full object-cover rounded-full grayscale">
-                                @else
-                                    <span class="text-white text-xs font-bold">{{ strtoupper(substr(auth()->user()->nama, 0, 2)) }}</span>
-                                @endif
+                        <div class="relative hidden sm:block">
+                            <button type="button" onclick="document.getElementById('landingUserMenu').classList.toggle('hidden')" aria-label="Menu akun" aria-haspopup="true" class="flex items-center gap-2.5 rounded-full border border-gray-200 bg-gray-100 px-2 py-1.5 pr-3 shadow-sm transition-all hover:border-gray-300 hover:shadow-md">
+                                <div class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-white bg-neutral-900">
+                                    @if(auth()->user()->foto_profil)
+                                        <img src="{{ route('profil.foto') }}" class="h-full w-full rounded-full object-cover" alt="Foto profil" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden')">
+                                        <span class="hidden text-white text-xs font-bold">{{ strtoupper(substr(auth()->user()->nama ?? 'PL', 0, 2)) }}</span>
+                                    @else
+                                        <span class="text-white text-xs font-bold">{{ strtoupper(substr(auth()->user()->nama ?? 'PL', 0, 2)) }}</span>
+                                    @endif
+                                </div>
+                                <span class="flex flex-col items-start leading-none">
+                                    <span class="text-[10px] font-extrabold uppercase tracking-[0.08em] text-gray-800">{{ explode(' ', auth()->user()->nama ?? 'Pelanggan')[0] }}</span>
+                                    <span class="mt-1 text-[7px] font-bold uppercase tracking-[0.08em] text-gray-400">Pelanggan</span>
+                                </span>
+                                <i class="fa-solid fa-chevron-down ml-1 text-[10px] text-gray-400"></i>
+                            </button>
+                            <div id="landingUserMenu" class="hidden absolute right-0 top-full z-50 mt-3 w-56 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl">
+                                <a href="{{ route('profil.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-50"><i class="fa-solid fa-user-gear w-4 text-center"></i>Kelola Profil</a>
+                                <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="flex w-full items-center gap-3 border-t border-gray-100 px-4 py-3 text-left text-sm font-semibold text-red-600 transition-colors hover:bg-red-50"><i class="fa-solid fa-arrow-right-from-bracket w-4 text-center"></i>Keluar</button></form>
                             </div>
-                            <span class="text-sm font-semibold text-gray-700">{{ explode(' ', auth()->user()->nama)[0] }}</span>
-                        </a>
+                        </div>
                     @else
                         <a href="{{ route('login') }}" class="text-sm font-semibold text-gray-500 hover:text-neutral-700 transition-colors hidden sm:block">Masuk</a>
                         <a href="{{ route('register') }}" class="btn-gradient text-white px-6 py-2.5 rounded-full text-sm font-semibold">
@@ -283,6 +298,10 @@
                 <a href="#tentang" class="block px-4 py-3 rounded-xl text-sm font-medium text-gray-500 hover:bg-neutral-50 hover:text-neutral-700 transition-colors">Tentang</a>
                 <a href="#kontak" class="block px-4 py-3 rounded-xl text-sm font-medium text-gray-500 hover:bg-neutral-50 hover:text-neutral-700 transition-colors">Kontak</a>
                 <a href="{{ url('/dashboard') }}" class="block px-4 py-3 rounded-xl text-sm font-medium text-gray-500 hover:bg-neutral-50 hover:text-neutral-700 transition-colors">Dashboard</a>
+                @auth
+                    <a href="{{ route('profil.index') }}" class="block px-4 py-3 rounded-xl text-sm font-medium text-gray-500 hover:bg-neutral-50 hover:text-neutral-700 transition-colors">Kelola Profil</a>
+                    <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="block w-full rounded-xl px-4 py-3 text-left text-sm font-medium text-red-600 transition-colors hover:bg-red-50">Keluar</button></form>
+                @endauth
             </div>
         </div>
     </nav>
@@ -346,25 +365,25 @@
     </section>
 
     {{-- LAYANAN SECTION --}}
-    <section id="layanan" class="py-24 hero-bg relative overflow-hidden">
-        <div class="absolute inset-0 flex flex-col items-center justify-center gap-5 pointer-events-none select-none z-0 watermark-mask diagonal-watermark">
+    <section id="layanan" class="flex items-center py-5 hero-bg relative overflow-hidden lg:min-h-[calc(100svh-5rem)]">
+        <div class="absolute inset-0 flex flex-col items-center justify-center gap-5 pointer-events-none select-none z-0 opacity-20 watermark-mask diagonal-watermark">
             <div class="flex whitespace-nowrap marquee-track">
-                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCLEAN</span>
-                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCLEAN</span>
-                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCLEAN</span>
-                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCLEAN</span>
+                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCARE</span>
+                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCARE</span>
+                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCARE</span>
+                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCARE</span>
             </div>
-            <div class="flex whitespace-nowrap marquee-track" style="animation-direction: reverse; animation-duration: 46s;">
-                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCLEAN</span>
-                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCLEAN</span>
-                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCLEAN</span>
-                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCLEAN</span>
+            <div class="flex whitespace-nowrap marquee-track" style="animation-direction: reverse; animation-duration: 20s;">
+                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCARE</span>
+                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCARE</span>
+                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCARE</span>
+                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCARE</span>
             </div>
-            <div class="flex whitespace-nowrap marquee-track" style="animation-duration: 52s;">
-                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCLEAN</span>
-                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCLEAN</span>
-                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCLEAN</span>
-                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCLEAN</span>
+            <div class="flex whitespace-nowrap marquee-track" style="animation-duration: 20s;">
+                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCARE</span>
+                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCARE</span>
+                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCARE</span>
+                <span class="font-display font-black text-[8rem] sm:text-[11rem] lg:text-[15rem] tracking-tighter leading-none watermark-text px-12">ALBRK SHOESCARE</span>
             </div>
         </div>
         <div class="w-full px-4 sm:px-6 lg:px-8 relative z-10">
@@ -436,12 +455,12 @@
     </section>
 
     {{-- TENTANG SECTION --}}
-    <section id="tentang" class="min-h-[calc(100svh-5rem)] bg-white flex items-center py-12 lg:py-16">
+    <section id="tentang" class="min-h-[calc(100svh-5rem)] bg-neutral-200 flex items-center py-5">
         <div class="w-full px-4 sm:px-6 lg:px-8">
             <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                 <div class="relative" data-aos="fade-right">
                     <div class="relative rounded-2xl overflow-hidden border border-neutral-200 shadow-2xl bg-white h-[52svh] min-h-[420px] max-h-[560px]">
-                        <img src="{{ $tentangPath }}" alt="Tentang ALBRK.SHOECARE" class="absolute inset-0 w-full h-full object-cover grayscale">
+                        <img src="{{ $tentangPath }}" alt="Tentang ALBRK.SHOESCARE" class="absolute inset-0 w-full h-full object-cover grayscale">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-white/10"></div>
                     </div>
 
@@ -465,7 +484,7 @@
                         Perawatan Premium.<br><span class="gradient-text">Jaminan Kualitas.</span>
                     </h2>
                     <p class="text-gray-500 text-lg leading-relaxed mb-8">
-                        ALBRK.SHOECARE hadir dari dedikasi tinggi terhadap standar perawatan sepatu premium. Kami menggunakan formulasi pembersih berkualitas yang terbukti aman untuk segala jenis material sepatu.
+                        ALBRK.SHOESCARE hadir dari dedikasi tinggi terhadap standar perawatan sepatu premium. Kami menggunakan formulasi pembersih berkualitas yang terbukti aman untuk segala jenis material sepatu.
                     </p>
 
                     <div class="space-y-6 mb-10">
@@ -508,7 +527,7 @@
     </section>
 
     {{-- KONTAK SECTION --}}
-    <section id="kontak" class="py-24 bg-white">
+    <section id="kontak" class="py-24 bg-neutral-200">
         <div class="w-full px-4 sm:px-6 lg:px-8">
             <div class="grid lg:grid-cols-2 gap-12 items-stretch">
                 <div data-aos="fade-right" class="flex flex-col justify-center">
@@ -551,9 +570,9 @@
                     </div>
                 </div>
 
-                <div class="bg-neutral-100 rounded-2xl overflow-hidden shadow-xl border border-neutral-200 h-115 lg:h-140" data-aos="fade-left">
+                <div class="bg-neutral-100 rounded-2xl overflow-hidden shadow-xl border border-neutral-200 h-[42vh] min-h-[360px] max-h-[440px]" data-aos="fade-left">
                     <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3954.264700874315!2d111.516142675883!3d-7.654637775736637!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e79bf3544520935%3A0x673c6a46a6f685c!2sALBRK.SHOECARE!5e0!3m2!1sid!2sid!4v1709663784534!5m2!1sid!2sid"
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3954.264700874315!2d111.516142675883!3d-7.654637775736637!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e79bf3544520935%3A0x673c6a46a6f685c!2sALBRK.SHOESCARE!5e0!3m2!1sid!2sid!4v1709663784534!5m2!1sid!2sid"
                         class="w-full h-full border-0 grayscale"
                         allowfullscreen=""
                         loading="lazy"
@@ -592,7 +611,7 @@
             </div>
 
             <p class="mt-8 text-gray-500 text-sm">
-                &copy; 2026 ALBRK.SHOECARE. Hak cipta dilindungi.
+                &copy; 2026 ALBRK.SHOESCARE. Hak cipta dilindungi.
             </p>
         </div>
     </footer>

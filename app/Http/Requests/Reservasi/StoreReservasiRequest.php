@@ -14,7 +14,8 @@ class StoreReservasiRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id_layanan' => 'required|exists:ms_layanan,id_layanan',
+            'id_layanans' => 'required|array|min:1',
+            'id_layanans.*' => 'required|integer|distinct|exists:ms_layanan,id_layanan',
             'jumlah_sepatu' => 'nullable|integer|min:1|max:10',
             'metode_layanan' => 'required|string',
             'alamat_jemput' => 'nullable|string|max:255',
@@ -29,8 +30,9 @@ class StoreReservasiRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'id_layanan.required' => 'Layanan wajib dipilih.',
-            'id_layanan.exists' => 'Layanan tidak ditemukan.',
+            'id_layanans.required' => 'Pilih minimal satu layanan.',
+            'id_layanans.min' => 'Pilih minimal satu layanan.',
+            'id_layanans.*.exists' => 'Salah satu layanan tidak ditemukan.',
             'jumlah_sepatu.min' => 'Jumlah sepatu minimal 1.',
             'jumlah_sepatu.max' => 'Jumlah sepatu maksimal 10.',
             'metode_layanan.required' => 'Metode layanan wajib dipilih.',

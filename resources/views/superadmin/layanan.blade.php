@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Katalog Layanan - ALBRK.SHOECARE</title>
+    <title>Katalog Layanan - ALBRK.SHOESCARE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0f172a; overflow: hidden; }
         .glass-panel { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .custom-scroll::-webkit-scrollbar { width: 5px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .custom-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+        .custom-scroll::-webkit-scrollbar { display: none; }
     </style>
 </head>
 
@@ -36,27 +36,35 @@
 
     <main class="flex-1 flex flex-col min-w-0 bg-[#0f172a] relative z-10 h-screen">
 
-        <header class="bg-[#0f172a]/40 backdrop-blur-xl border-b border-white/5 px-6 md:px-12 py-4 flex justify-between items-center shrink-0 z-40">
+        <header class="bg-[#0f172a]/40 backdrop-blur-xl border-b border-slate-700/80 px-6 md:px-12 py-4 flex justify-between items-center shrink-0 z-40">
             <div class="flex items-center gap-3 md:gap-4">
-                <a href="{{ route('superadmin.dashboard') }}" class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-slate-800/50 border border-slate-700 text-slate-400 hover:text-emerald-400 hover:bg-slate-800 transition-all flex items-center justify-center shadow-sm group active:scale-95">
-                    <i class="fa-solid fa-arrow-left text-sm group-hover:-translate-x-1 transition-transform"></i>
-                </a>
                 <h1 class="block font-black text-xl md:text-2xl uppercase tracking-tighter italic text-white leading-tight">
                     ALBRK.<span class="text-emerald-500">SUPER</span>
                 </h1>
             </div>
             <div class="flex items-center gap-5">
-                <div class="flex items-center bg-slate-800/40 border border-slate-700 p-1 pr-4 rounded-full shadow-inner">
-                    <div class="w-8 h-8 rounded-full overflow-hidden bg-emerald-600 flex items-center justify-center text-[10px] font-black text-white border border-slate-700 shadow-xl shadow-emerald-500/20">
-                        @if(auth()->user()->foto_profil)
-                            <img src="{{ asset('storage/' . auth()->user()->foto_profil) }}" class="w-full h-full object-cover">
-                        @else
-                            {{ strtoupper(substr(auth()->user()->nama, 0, 2)) }}
-                        @endif
-                    </div>
-                    <div class="ml-3 hidden md:block">
-                        <p class="text-[10px] font-black text-white uppercase tracking-widest leading-none">{{ explode(' ', auth()->user()->nama)[0] }}</p>
-                        <p class="text-[7px] font-bold text-emerald-400/80 uppercase mt-0.5 tracking-tighter">Akses Pemilik</p>
+                <div class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-800/50 px-3 md:px-4 py-2 rounded-full border border-slate-700 hidden sm:block shadow-inner">
+                    Hari ini: <span class="text-white">{{ now()->format('d M Y') }}</span>
+                </div>
+                <div class="relative">
+                    <button type="button" id="userMenuButton" onclick="document.getElementById('userMenu').classList.toggle('hidden')" class="flex items-center bg-slate-800/40 border border-slate-700 p-1 pr-4 rounded-full shadow-inner hover:border-emerald-500/40 transition-all">
+                        <div class="w-8 h-8 rounded-full overflow-hidden bg-emerald-600 flex items-center justify-center text-[10px] font-black text-white border border-slate-700 shadow-xl shadow-emerald-500/20">
+                            @if(auth()->user()->foto_profil)
+                                <img src="{{ route('profil.foto') }}" alt="Foto profil" class="w-full h-full rounded-full bg-white object-contain p-0.5" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden')">
+                                <span class="hidden">SU</span>
+                            @else
+                                SU
+                            @endif
+                        </div>
+                        <div class="ml-3 hidden md:block">
+                            <p class="text-[10px] font-black text-white uppercase tracking-widest leading-none">{{ explode(' ', auth()->user()->nama ?? 'Superadmin')[0] }}</p>
+                            <p class="text-[7px] font-bold text-emerald-400/80 uppercase mt-0.5 tracking-tighter">Akses Pemilik</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-[10px] text-slate-500 ml-3"></i>
+                    </button>
+                    <div id="userMenu" class="hidden absolute right-0 mt-3 w-56 rounded-2xl bg-slate-900/95 border border-slate-700 shadow-2xl shadow-black/30 overflow-hidden z-50">
+                        <a href="{{ route('profil.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-300 hover:bg-emerald-500/10 hover:text-emerald-300 transition-colors"><i class="fa-solid fa-user-gear w-4 text-center"></i> Profil</a>
+                        <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors text-left"><i class="fa-solid fa-arrow-right-from-bracket w-4 text-center"></i> Keluar</button></form>
                     </div>
                 </div>
             </div>
@@ -73,12 +81,8 @@
 
             <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8 md:mb-10 relative z-10">
                 <div>
-                    <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 rounded-full mb-4">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_currentColor]"></span>
-                        <p class="text-[8px] md:text-[9px] font-black text-emerald-400 uppercase tracking-[0.4em]">Service & Banner Management</p>
-                    </div>
                     <h1 class="text-3xl md:text-5xl font-black text-white tracking-tighter leading-none mb-2">
-                        Katalog <span class="italic text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-200">Layanan.</span>
+                        Katalog <span class="italic text-{{ $accent }}-400">Layanan</span>
                     </h1>
                     <p class="text-slate-400 font-medium text-sm">Kelola daftar harga, layanan, dan banner halaman depan web.</p>
                 </div>
@@ -217,15 +221,15 @@
                 </div>
             </div>
 
-            <div class="mt-auto pt-6 pb-2 border-t border-white/5 flex justify-center items-center opacity-40 shrink-0 relative z-10">
-                <p class="text-[9px] font-black uppercase tracking-[0.2em] w-full text-center text-white">&copy; 2026 ALBRK.MASTER PANEL CONTROL</p>
-            </div>
         </div>
+        <footer class="mt-auto w-full shrink-0 border-t border-slate-700/80 bg-[#0f172a]/50 px-6 py-6 text-center">
+            <p class="text-xs text-slate-500">&copy; 2026 <span class="font-semibold text-slate-400">ALBRK.SHOESCARE</span></p>
+        </footer>
     </main>
 
     {{-- MODAL --}}
     <div id="modalLayanan" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="toggleModal()"></div>
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
         <div class="relative w-full max-w-lg bg-slate-900 border border-slate-700 rounded-[2.5rem] shadow-2xl p-8 md:p-10 max-h-[90vh] overflow-y-auto custom-scroll">
             <div class="flex justify-between items-center mb-8">
                 <h3 id="modalTitle" class="text-2xl font-black uppercase tracking-tight text-white">Tambah <span class="text-emerald-500 italic">Layanan.</span></h3>
@@ -389,10 +393,16 @@
 
         function toggleModal() {
             const modal = document.getElementById('modalLayanan');
-            modal.classList.toggle('hidden');
-            modal.classList.toggle('flex');
-            document.body.style.overflow = modal.classList.contains('hidden') ? 'auto' : 'hidden';
+            const isOpen = !modal.classList.contains('hidden');
+            modal.classList.toggle('hidden', isOpen);
+            modal.classList.toggle('flex', !isOpen);
+            document.body.style.overflow = isOpen ? 'auto' : 'hidden';
         }
     </script>
 </body>
 </html>
+
+
+
+
+

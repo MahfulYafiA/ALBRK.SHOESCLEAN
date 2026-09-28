@@ -29,7 +29,7 @@ class ReservasiViewModel
     {
         $result = $this->reservasiService->createReservasi([
             'id_user' => auth()->id(),
-            'id_layanan' => $request->id_layanan,
+            'id_layanans' => $request->input('id_layanans', []),
             'jumlah_sepatu' => $request->jumlah_sepatu ?? 1,
             'metode_layanan' => $request->metode_layanan,
             'alamat_jemput' => $request->alamat_jemput,

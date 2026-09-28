@@ -1,12 +1,18 @@
 # ALBRK Shoesclean
 
-ALBRK Shoesclean adalah sistem informasi reservasi layanan cuci sepatu berbasis Laravel. Sistem ini dibuat untuk kebutuhan tugas akhir dengan fokus pada reservasi pelanggan, manajemen layanan, antrean, pembayaran, laporan, dan pengelolaan pengguna.
+ALBRK Shoesclean adalah aplikasi reservasi dan pengelolaan layanan cuci sepatu berbasis Laravel. Aplikasi ini mendukung alur pelanggan, admin, kasir, dan superadmin.
 
-## Ringkasan Arsitektur
+## Fitur
 
-Project ini menggunakan Laravel dengan pemisahan layer secara modular dan menerapkan pendekatan MVVM.
+- Pelanggan dapat memilih satu atau beberapa layanan dalam satu reservasi. Harga dihitung dari gabungan layanan terpilih dikalikan jumlah pasang sepatu.
+- Reservasi menyimpan setiap layanan sebagai detail terpisah, lalu menampilkan semua layanan pada riwayat pelanggan, antrean admin, dan laporan.
+- Pelanggan dapat memantau status reservasi dari menunggu hingga selesai.
+- Admin dapat memperbarui status pesanan. Pesanan berstatus selesai tetap berada di antrean sampai ditandai sudah diambil.
+- Aplikasi menyediakan pengelolaan katalog layanan, pengguna, kasir offline, pembayaran, dan laporan omzet.
 
-Alur utama aplikasi:
+## Arsitektur
+
+Project ini merupakan Laravel monolith modular dengan pemisahan layer dan pendekatan MVVM.
 
 ```text
 Route -> Controller -> ViewModel -> Service -> Repository -> Model -> Database
@@ -15,92 +21,84 @@ Route -> Controller -> ViewModel -> Service -> Repository -> Model -> Database
                          View
 ```
 
-Penjelasan singkat:
-
 - `Controller` menerima request dan memilih alur proses.
-- `ViewModel` menyiapkan data yang dibutuhkan tampilan.
-- `Service` berisi business logic aplikasi.
-- `Repository` menangani akses data ke database.
+- `ViewModel` menyiapkan data untuk tampilan.
+- `Service` berisi logika bisnis.
+- `Repository` menangani akses data.
 - `Model` merepresentasikan tabel database.
-- `View` menampilkan data ke pengguna.
+- `View` menampilkan halaman Blade.
 
 ## Struktur Folder
 
 ```text
 albrkshoesclean/
-|-- backend/                  # Satu aplikasi Laravel (MVVM, service, repository, dan view)
-|-- app/                      # Core aplikasi Laravel
+|-- app/                      # Controller, model, service, repository, dan ViewModel
 |-- bootstrap/                # Bootstrap Laravel
 |-- config/                   # Konfigurasi Laravel
-|-- database/                 # Migration, seeder, factory
+|-- database/                 # Migration, seeder, dan factory
 |-- public/                   # Document root web server
+|-- resources/views/          # Tampilan Blade
 |-- routes/                   # Definisi route aplikasi
-|-- storage/                  # Cache, log, upload runtime
+|-- storage/                  # Cache, log, dan upload runtime
 |-- tests/                    # Test aplikasi
 |-- artisan
-`-- composer.json
+|-- composer.json
+`-- package.json
 ```
 
-Catatan: project ini adalah Laravel monolith modular. View Blade dan asset Vite berada di dalam aplikasi Laravel sehingga tidak ada server frontend terpisah.
+## Menjalankan untuk Development
 
-## Menjalankan Project Untuk Development
+Persyaratan utama: PHP 8.2+, Composer, Node.js, npm, dan MySQL.
 
-Jalankan satu perintah dari folder Laravel:
+Jalankan dari folder project:
 
 ```powershell
-cd backend
 composer install
+Copy-Item .env.example .env # jika file .env belum ada
+php artisan key:generate
 npm install
+```
+
+Sesuaikan koneksi database pada `.env`, lalu jalankan migrasi dan data awal:
+
+```powershell
+php artisan migrate --seed
+```
+
+Jalankan Laravel dan Vite:
+
+```powershell
 composer run dev
 ```
 
-Jika Windows menolak temporary file, jalankan:
-
-```powershell
-cd backend
-.\start-backend.ps1
-```
-
-Website tersedia di `http://127.0.0.1:8000`. Script tersebut menjalankan Laravel dan Vite bersamaan serta kompatibel dengan Windows (Laravel Pail membutuhkan ekstensi `pcntl` yang umumnya hanya tersedia di Unix).
+Website tersedia di `http://127.0.0.1:8000`.
 
 ## Database
 
-Sesuaikan konfigurasi database di `.env`:
+Contoh konfigurasi MySQL pada `.env`:
 
 ```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=albrk_shoeclean
+DB_DATABASE=albrk_shoescare
 DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-Jalankan migrasi:
+Jalankan migrasi baru dengan:
 
 ```powershell
 php artisan migrate
 ```
 
-Jika ingin reset data demo:
-
-```powershell
-php artisan migrate:fresh --seed
-```
+Untuk menghapus seluruh tabel dan membangun ulang database beserta seed, gunakan `php artisan migrate:fresh --seed`. Perintah ini menghapus data yang ada.
 
 ## Build Production
 
-Build asset frontend:
-
 ```powershell
-cd backend
 npm install
 npm run build
-```
-
-Optimasi Laravel:
-
-```powershell
 composer install --no-dev --optimize-autoloader
 php artisan migrate --force
 php artisan storage:link
@@ -109,10 +107,4 @@ php artisan route:cache
 php artisan view:cache
 ```
 
-Konfigurasi `.env` production:
-
-```env
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://domain-kamu.com
-```
+Atur `.env` production, termasuk `APP_ENV=production`, `APP_DEBUG=false`, dan `APP_URL` sesuai domain aplikasi.

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Pendapatan - ALBRK.SHOECARE</title>
+    <title>Laporan Pendapatan - ALBRK.SHOESCARE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,8 +18,8 @@
             border: 1px solid rgba(255, 255, 255, 0.05); 
         }
 
-        .custom-scroll::-webkit-scrollbar { width: 5px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .custom-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+        .custom-scroll::-webkit-scrollbar { display: none; }
 
         @media print {
             .no-print { display: none !important; }
@@ -47,27 +47,37 @@
     <main class="flex-1 flex flex-col h-screen min-w-0 bg-[#0f172a] relative z-10">
         
         {{-- TOP NAVIGATION --}}
-        <header class="bg-[#0f172a]/40 backdrop-blur-xl border-b border-white/5 px-6 md:px-12 py-4 flex justify-between items-center shrink-0 z-40 no-print">
+        <header class="bg-[#0f172a]/40 backdrop-blur-xl border-b border-slate-700/80 px-6 md:px-12 py-4 flex justify-between items-center shrink-0 z-40 no-print">
             
             <div class="flex items-center gap-3 md:gap-4">
-                {{-- Tombol Kembali otomatis ke Dashboard masing-masing --}}
-                <a href="{{ $isSuper ? route('superadmin.dashboard') : route('admin.dashboard') }}" class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-slate-800/50 border border-slate-700 text-slate-400 hover:text-{{ $accentColor }}-400 hover:bg-slate-800 transition-all flex items-center justify-center shadow-sm group active:scale-95" title="Kembali ke Dasbor">
-                    <i class="fa-solid fa-arrow-left text-sm group-hover:-translate-x-1 transition-transform"></i>
-                </a>
-                
                 <h1 class="block font-black text-xl md:text-2xl uppercase tracking-tighter italic text-white leading-tight">
                     ALBRK.<span class="{{ $accentHex }}">{{ $isSuper ? 'SUPER' : 'ADMIN' }}</span>
                 </h1>
             </div>
             
             <div class="flex items-center gap-5">
-                <div class="flex items-center bg-slate-800/40 border border-slate-700 p-1 pr-4 rounded-full shadow-inner">
-                    <div class="w-8 h-8 rounded-full overflow-hidden bg-{{ $accentColor }}-600 flex items-center justify-center text-[10px] font-black text-white border border-slate-700 shadow-xl">
-                        {{ $isSuper ? 'SU' : strtoupper(substr(auth()->user()->nama, 0, 2)) }}
-                    </div>
-                    <div class="ml-3 hidden md:block">
-                        <p class="text-[10px] font-black text-white uppercase tracking-widest leading-none">{{ explode(' ', auth()->user()->nama)[0] }}</p>
-                        <p class="text-[7px] font-bold text-{{ $accentColor }}-500/60 uppercase mt-0.5 tracking-tighter">{{ $isSuper ? 'Akses Pemilik' : 'Akses Terverifikasi' }}</p>
+                <div class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-800/50 px-3 md:px-4 py-2 rounded-full border border-slate-700 hidden sm:block shadow-inner">
+                    Hari ini: <span class="text-white">{{ now()->format('d M Y') }}</span>
+                </div>
+                <div class="relative">
+                    <button type="button" id="userMenuButton" onclick="document.getElementById('userMenu').classList.toggle('hidden')" class="flex items-center bg-slate-800/40 border border-slate-700 p-1 pr-4 rounded-full shadow-inner hover:border-emerald-500/40 transition-all">
+                        <div class="w-8 h-8 rounded-full overflow-hidden bg-emerald-600 flex items-center justify-center text-[10px] font-black text-white border border-slate-700 shadow-xl shadow-emerald-500/20">
+                            @if(auth()->user()->foto_profil)
+                                <img src="{{ route('profil.foto') }}" alt="Foto profil" class="w-full h-full rounded-full bg-white object-contain p-0.5" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden')">
+                                <span class="hidden">SU</span>
+                            @else
+                                SU
+                            @endif
+                        </div>
+                        <div class="ml-3 hidden md:block">
+                            <p class="text-[10px] font-black text-white uppercase tracking-widest leading-none">{{ explode(' ', auth()->user()->nama ?? 'Superadmin')[0] }}</p>
+                            <p class="text-[7px] font-bold text-emerald-400/80 uppercase mt-0.5 tracking-tighter">Akses Pemilik</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-[10px] text-slate-500 ml-3"></i>
+                    </button>
+                    <div id="userMenu" class="hidden absolute right-0 mt-3 w-56 rounded-2xl bg-slate-900/95 border border-slate-700 shadow-2xl shadow-black/30 overflow-hidden z-50">
+                        <a href="{{ route('profil.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-300 hover:bg-emerald-500/10 hover:text-emerald-300 transition-colors"><i class="fa-solid fa-user-gear w-4 text-center"></i> Profil</a>
+                        <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors text-left"><i class="fa-solid fa-arrow-right-from-bracket w-4 text-center"></i> Keluar</button></form>
                     </div>
                 </div>
             </div>
@@ -81,12 +91,8 @@
             {{-- HEADER HALAMAN & TOTAL OMSET --}}
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 md:mb-12 relative z-10">
                 <div>
-                    <div class="inline-flex items-center gap-2 bg-{{ $accentColor }}-500/10 border border-{{ $accentColor }}-500/20 px-4 py-1.5 rounded-full mb-4 no-print">
-                        <span class="w-1.5 h-1.5 rounded-full bg-{{ $accentColor }}-500 animate-pulse"></span>
-                        <p class="text-[8px] md:text-[9px] font-black text-{{ $accentColor }}-400 uppercase tracking-[0.4em]">Financial Report</p>
-                    </div>
                     <h1 class="text-3xl md:text-5xl font-black text-white print-text-dark tracking-tighter leading-none mb-2">
-                        Laporan <span class="italic text-transparent bg-clip-text bg-gradient-to-r from-{{ $accentColor }}-400 to-teal-200 print-text-dark">Omset.</span>
+                        Laporan <span class="italic text-emerald-400 print-text-dark">Omset</span>
                     </h1>
                     <p class="text-slate-400 print-text-dark font-medium text-sm">Monitoring resmi pendapatan sistem ALBRK.SHOECLEAN</p>
                 </div>
@@ -104,11 +110,11 @@
             <div class="glass-panel rounded-3xl p-5 md:p-6 mb-8 relative z-10 no-print border border-white/5 shadow-lg">
                 <form action="{{ url()->current() }}" method="GET" class="flex flex-col md:flex-row items-end gap-4">
                     <div class="w-full md:w-auto flex-1">
-                        <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Dari Tanggal</label>
+                        <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Dari Tanggal</label>
                         <input type="date" name="start_date" value="{{ request('start_date', $start_date ?? '') }}" class="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl px-5 py-3.5 text-sm focus:ring-2 focus:ring-{{ $accentColor }}-500 outline-none transition-all [color-scheme:dark]">
                     </div>
                     <div class="w-full md:w-auto flex-1">
-                        <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Sampai Tanggal</label>
+                        <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Sampai Tanggal</label>
                         <input type="date" name="end_date" value="{{ request('end_date', $end_date ?? '') }}" class="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl px-5 py-3.5 text-sm focus:ring-2 focus:ring-{{ $accentColor }}-500 outline-none transition-all [color-scheme:dark]">
                     </div>
                     <button type="submit" class="w-full md:w-auto bg-{{ $accentColor }}-600 hover:bg-{{ $accentColor }}-500 text-white px-8 py-4 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all">
@@ -144,7 +150,7 @@
                                 </td>
                                 <td class="px-8 py-6">
                                     <span class="bg-slate-800 text-slate-300 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border border-slate-700">
-                                        {{ $l->detail->first()->layanan->nama_layanan ?? 'N/A' }}
+                                        {{ $l->detail->map(fn ($detail) => $detail->layanan?->nama_layanan)->filter()->join(', ') ?: 'N/A' }}
                                     </span>
                                     <span class="block text-[9px] font-bold text-slate-500 mt-2 uppercase tracking-widest">{{ $l->detail->first()->jumlah ?? 1 }} PASANG</span>
                                 </td>
@@ -172,6 +178,14 @@
             </div>
 
         </div>
+        <footer class="mt-auto w-full shrink-0 border-t border-slate-700/80 bg-[#0f172a]/50 px-6 py-6 text-center no-print">
+            <p class="text-xs text-slate-500">&copy; 2026 <span class="font-semibold text-slate-400">ALBRK.SHOESCARE</span></p>
+        </footer>
     </main>
 </body>
 </html>
+
+
+
+
+

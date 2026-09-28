@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Superadmin - ALBRK.SHOECARE</title>
+    <title>Dashboard Superadmin - ALBRK.SHOESCARE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,8 +18,8 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .custom-scroll::-webkit-scrollbar { width: 5px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .custom-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+        .custom-scroll::-webkit-scrollbar { display: none; }
 
         /* Quick Action Card */
         .action-card {
@@ -63,11 +63,8 @@
 <body class="text-slate-200 antialiased flex h-screen overflow-hidden relative selection:bg-emerald-500 selection:text-white">
 
         <main class="flex-1 flex flex-col min-w-0 bg-[#0f172a] relative z-10 h-screen">
-            <header class="bg-[#0f172a]/40 backdrop-blur-xl border-b border-white/5 px-6 md:px-12 py-4 flex justify-between items-center shrink-0 z-40">
+            <header class="bg-[#0f172a]/40 backdrop-blur-xl border-b border-slate-700/80 px-6 md:px-12 py-4 flex justify-between items-center shrink-0 z-40">
                 <div class="flex items-center gap-3 md:gap-4">
-                    <a href="{{ url('/') }}" class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-slate-800/50 border border-slate-700 text-slate-400 hover:text-emerald-400 hover:bg-slate-800 transition-all flex items-center justify-center shadow-sm group active:scale-95">
-                        <i class="fa-solid fa-arrow-left text-sm group-hover:-translate-x-1 transition-transform"></i>
-                    </a>
                     <h1 class="block font-black text-xl md:text-2xl uppercase tracking-tighter italic text-white leading-tight">
                         ALBRK.<span class="text-emerald-500">SUPER</span>
                     </h1>
@@ -80,7 +77,8 @@
                     <button type="button" id="userMenuButton" onclick="document.getElementById('userMenu').classList.toggle('hidden')" class="flex items-center bg-slate-800/40 border border-slate-700 p-1 pr-4 rounded-full shadow-inner hover:border-emerald-500/40 transition-all">
                         <div class="w-8 h-8 rounded-full overflow-hidden bg-emerald-600 flex items-center justify-center text-[10px] font-black text-white border border-slate-700 shadow-xl shadow-emerald-500/20">
                             @if(auth()->user()->foto_profil)
-                                <img src="{{ asset('storage/' . auth()->user()->foto_profil) }}" class="w-full h-full object-cover">
+                                <img src="{{ route('profil.foto') }}" alt="Foto profil" class="w-full h-full rounded-full bg-white object-contain p-0.5" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden')">
+                                <span class="hidden">SU</span>
                             @else
                                 SU
                             @endif
@@ -94,7 +92,7 @@
                     <div id="userMenu" class="hidden absolute right-0 mt-3 w-56 rounded-2xl bg-slate-900/95 border border-slate-700 shadow-2xl shadow-black/30 overflow-hidden z-50">
                         <a href="{{ route('profil.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-300 hover:bg-emerald-500/10 hover:text-emerald-300 transition-colors">
                             <i class="fa-solid fa-user-gear w-4 text-center"></i>
-                            Kelola Profil
+                            Profil
                         </a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -109,7 +107,7 @@
             </header>
 
             {{-- Content --}}
-            <div class="p-6 lg:p-12 flex-1 overflow-y-auto custom-scroll relative">
+            <div class="p-6 lg:p-12 flex-1 overflow-y-hidden custom-scroll relative">
                 {{-- Background Glow --}}
                 <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-600/10 blur-[120px] rounded-full pointer-events-none -translate-y-1/2 translate-x-1/4"></div>
 
@@ -117,10 +115,6 @@
                 <div class="glass-panel w-full rounded-[2rem] p-8 mb-8 relative overflow-hidden border border-white/5">
                     <div class="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full -translate-y-1/2 translate-x-1/3 blur-3xl"></div>
                     <div class="relative z-10">
-                        <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 rounded-full mb-4">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <p class="text-[9px] font-black text-emerald-400 uppercase tracking-[0.3em]">Akses Penuh</p>
-                        </div>
                         <h1 class="text-3xl lg:text-4xl font-black text-white mb-2 tracking-tight">
                             Selamat Datang Kembali, <span class="text-emerald-400">{{ auth()->user()->nama ?? 'Pemilik' }}!</span>
                         </h1>
@@ -138,7 +132,7 @@
                             <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-lg">+12%</span>
                         </div>
                         <p class="text-3xl font-black text-white mb-1">{{ $stats['total_antrean'] ?? 0 }}</p>
-                        <p class="text-[10px] text-slate-500 uppercase tracking-wider">Antrean Aktif</p>
+                        <p class="text-[10px] text-slate-500 uppercase tracking-wider">Antrian Aktif</p>
                     </div>
 
                     <div class="stat-card rounded-2xl p-5">
@@ -177,12 +171,13 @@
                 {{-- Quick Actions --}}
                 <div class="mb-8 relative z-10">
                     <h3 class="text-lg font-bold text-white mb-4">Aksi Cepat</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-5 gap-4 w-full">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 w-full">
                         @php
                             $menus = [
+                                ['url' => route('profil.index'), 'icon' => 'fa-user-gear', 'title' => 'Profil', 'desc' => 'Pengaturan'],
                                 ['url' => route('superadmin.laporan'), 'icon' => 'fa-chart-line', 'title' => 'Laporan', 'desc' => 'Omset'],
                                 ['url' => route('superadmin.users'), 'icon' => 'fa-user-shield', 'title' => 'Manajemen', 'desc' => 'User & Admin'],
-                                ['url' => route('admin.antrean'), 'icon' => 'fa-list-check', 'title' => 'Antrean', 'desc' => 'Status'],
+                                ['url' => route('admin.antrean'), 'icon' => 'fa-list-check', 'title' => 'Antrian', 'desc' => 'Status'],
                                 ['url' => route('superadmin.layanan.index'), 'icon' => 'fa-box', 'title' => 'Layanan', 'desc' => 'Harga'],
                                 ['url' => route('superadmin.transaksi.offline'), 'icon' => 'fa-cash-register', 'title' => 'Kasir', 'desc' => 'Offline'],
                             ];
@@ -202,8 +197,8 @@
             </div>
 
             {{-- Footer --}}
-            <footer class="mt-auto w-full px-8 py-6 border-t border-white/5 bg-[#0f172a]/50">
-                <p class="text-xs text-slate-500">&copy; 2026 ALBRK.SHOECARE. Hak cipta dilindungi. | Panel Superadmin</p>
+            <footer class="mt-auto w-full shrink-0 border-t border-slate-700/80 bg-[#0f172a]/50 px-6 py-6 text-center">
+                <p class="text-xs text-slate-500">&copy; 2026 <span class="font-semibold text-slate-400">ALBRK.SHOESCARE</span></p>
             </footer>
         </main>
     <script>
@@ -216,3 +211,9 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+

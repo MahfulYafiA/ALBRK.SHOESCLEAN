@@ -71,6 +71,7 @@ Route::middleware('auth')->group(function () {
     // Profil Management
     Route::prefix('profil')->name('profil.')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('index');
+        Route::get('/foto', [ProfileController::class, 'foto'])->name('foto');
         Route::patch('/update', [ProfileController::class, 'update'])->name('update');
         Route::patch('/password', [ProfileController::class, 'updatePassword'])->name('updatePassword');
         Route::patch('/foto', [ProfileController::class, 'updateFoto'])->name('updateFoto');

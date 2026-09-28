@@ -47,17 +47,27 @@ class ReservasiService implements ReservasiServiceInterface
         try {
             DB::beginTransaction();
 
-            $layanan = $this->layananRepository->findById((int) $data['id_layanan']);
-            if (! $layanan) {
-                throw new \RuntimeException('Layanan tidak ditemukan.');
+            $idLayanans = array_values(array_unique(array_map('intval', $data['id_layanans'] ?? [])));
+            if ($idLayanans === []) {
+                throw new \RuntimeException('Pilih minimal satu layanan.');
             }
-            $totalHarga = $layanan->harga * ($data['jumlah_sepatu'] ?? 1);
+
+            $layanans = collect($idLayanans)->map(function (int $idLayanan) {
+                $layanan = $this->layananRepository->findById($idLayanan);
+                if (! $layanan || $layanan->status !== 'Aktif') {
+                    throw new \RuntimeException('Salah satu layanan tidak tersedia.');
+                }
+
+                return $layanan;
+            });
+            $jumlahSepatu = (int) ($data['jumlah_sepatu'] ?? 1);
+            $totalHarga = $layanans->sum(fn ($layanan) => $layanan->harga) * $jumlahSepatu;
 
             // Create reservation
             $reservasi = $this->reservasiRepository->create([
                 'id_user' => $data['id_user'],
                 'tanggal_reservasi' => Carbon::now()->toDateString(),
-                'jumlah_sepatu' => $data['jumlah_sepatu'] ?? 1,
+                'jumlah_sepatu' => $jumlahSepatu,
                 'metode_layanan' => $data['metode_layanan'],
                 'alamat_jemput' => $data['alamat_jemput'] ?? null,
                 'metode_pengembalian' => $data['metode_pengembalian'],
@@ -72,14 +82,16 @@ class ReservasiService implements ReservasiServiceInterface
                 'catatan' => $data['catatan'] ?? null,
             ]);
 
-            // Create detail
-            $this->detailReservasiRepository->create([
-                'id_reservasi' => $reservasi->id_reservasi,
-                'id_layanan' => $layanan->id_layanan,
-                'harga' => $layanan->harga,
-                'jumlah' => $data['jumlah_sepatu'] ?? 1,
-                'sub_total' => $totalHarga,
-            ]);
+            // Store one detail row for each selected service.
+            foreach ($layanans as $layanan) {
+                $this->detailReservasiRepository->create([
+                    'id_reservasi' => $reservasi->id_reservasi,
+                    'id_layanan' => $layanan->id_layanan,
+                    'harga' => $layanan->harga,
+                    'jumlah' => $jumlahSepatu,
+                    'sub_total' => $layanan->harga * $jumlahSepatu,
+                ]);
+            }
 
             DB::commit();
 

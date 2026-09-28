@@ -3,21 +3,24 @@
 namespace App\ViewModels\Pelanggan;
 
 use App\Services\Contracts\ReservasiServiceInterface;
+use App\Repositories\Contracts\ReservasiRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class RiwayatViewModel
 {
     public function __construct(
-        private ReservasiServiceInterface $reservasiService
+        private ReservasiServiceInterface $reservasiService,
+        private ReservasiRepositoryInterface $reservasiRepository,
     ) {}
 
     /**
      * Get riwayat reservasi for current user
      */
-    public function getRiwayatReservasi(): array
+    public function getRiwayatReservasi(): Collection
     {
-        return $this->reservasiService->getReservasiByUser(auth()->id());
+        return $this->reservasiRepository->getByUser(auth()->id());
     }
 
     /**

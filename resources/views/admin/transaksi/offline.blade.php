@@ -12,7 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kasir Offline - ALBRK.SHOECARE</title>
+    <title>Kasir Offline - ALBRK.SHOESCARE</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -59,34 +59,44 @@
     </div>
 
     {{-- Header --}}
-    <header class="shrink-0 z-50 bg-[#0f172a]/40 backdrop-blur-xl border-b border-white/5 px-6 md:px-12 py-4">
-        <div class="w-full flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <a href="{{ $dashboardRoute }}" class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-slate-800/50 border border-slate-700 text-slate-400 hover:text-{{ $accent }}-400 hover:bg-slate-800 transition-all flex items-center justify-center shadow-sm group active:scale-95">
-                    <i class="fa-solid fa-arrow-left"></i>
-                </a>
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-{{ $accent }}-600 flex items-center justify-center shadow-xl shadow-{{ $accent }}-500/20">
-                        <i class="fa-solid fa-shoe-prints text-white text-sm"></i>
-                    </div>
-                    <h1 class="font-display font-bold text-xl text-white">ALBRK<span class="text-{{ $accent }}-500">.{{ $isSuper ? 'SUPER' : 'ADMIN' }}</span></h1>
-                </div>
+    <header class="bg-[#0f172a]/40 backdrop-blur-xl border-b border-slate-700/80 px-6 md:px-12 py-4 flex justify-between items-center shrink-0 z-40">
+        <div class="flex items-center gap-3 md:gap-4">
+            <h1 class="block font-black text-xl md:text-2xl uppercase tracking-tighter italic text-white leading-tight">
+                ALBRK.<span class="text-{{ $accent }}-500">{{ $isSuper ? 'SUPER' : 'ADMIN' }}</span>
+            </h1>
+        </div>
+        <div class="flex items-center gap-5">
+            <div class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-800/50 px-3 md:px-4 py-2 rounded-full border border-slate-700 hidden sm:block shadow-inner">
+                Hari ini: <span class="text-white">{{ now()->format('d M Y') }}</span>
             </div>
-
-            <div class="flex items-center gap-4">
-                <div class="hidden md:flex items-center gap-2 bg-slate-800/50 px-4 py-1.5 rounded-full border border-slate-700">
-                    <i class="fa-solid fa-calendar text-gray-400 text-xs"></i>
-                    <span class="text-xs font-medium text-gray-400">{{ now()->format('d M Y') }}</span>
-                </div>
-                <div class="flex items-center gap-3 bg-slate-800/40 border border-slate-700 rounded-full px-4 py-2">
-                    <div class="w-8 h-8 rounded-full bg-{{ $accent }}-600 flex items-center justify-center text-white text-xs font-bold shadow-xl shadow-{{ $accent }}-500/20">
+            <div class="relative">
+                <button type="button" id="userMenuButton" onclick="document.getElementById('userMenu').classList.toggle('hidden')" class="flex items-center bg-slate-800/40 border border-slate-700 p-1 pr-4 rounded-full shadow-inner hover:border-{{ $accent }}-500/40 transition-all">
+                    <div class="w-8 h-8 rounded-full overflow-hidden bg-{{ $accent }}-600 flex items-center justify-center text-[10px] font-black text-white border border-slate-700 shadow-xl shadow-{{ $accent }}-500/20">
                         @if(auth()->user()->foto_profil)
-                            <img src="{{ asset('storage/' . auth()->user()->foto_profil) }}" class="w-full h-full object-cover rounded-full">
+                            <img src="{{ route('profil.foto') }}" alt="Foto profil" class="w-full h-full rounded-full bg-white object-contain p-0.5" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden')">
+                            <span class="hidden">{{ $isSuper ? 'SU' : strtoupper(substr(auth()->user()->nama ?? 'AD', 0, 2)) }}</span>
                         @else
-                            {{ $isSuper ? 'SU' : strtoupper(substr(auth()->user()->nama ?? 'SA', 0, 2)) }}
+                            {{ $isSuper ? 'SU' : strtoupper(substr(auth()->user()->nama ?? 'AD', 0, 2)) }}
                         @endif
                     </div>
-                    <span class="text-xs font-semibold text-white hidden sm:block">{{ auth()->user()->nama ?? 'Staff' }}</span>
+                    <div class="ml-3 hidden md:block">
+                        <p class="text-[10px] font-black text-white uppercase tracking-widest leading-none">{{ explode(' ', auth()->user()->nama ?? 'Admin')[0] }}</p>
+                        <p class="text-[7px] font-bold text-{{ $accent }}-400/80 uppercase mt-0.5 tracking-tighter">{{ $isSuper ? 'Akses Pemilik' : 'Akses Staf' }}</p>
+                    </div>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-500 ml-3"></i>
+                </button>
+                <div id="userMenu" class="hidden absolute right-0 mt-3 w-56 rounded-2xl bg-slate-900/95 border border-slate-700 shadow-2xl shadow-black/30 overflow-hidden z-50">
+                    <a href="{{ route('profil.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-300 hover:bg-{{ $accent }}-500/10 hover:text-{{ $accent }}-300 transition-colors">
+                        <i class="fa-solid fa-user-gear w-4 text-center"></i>
+                        Kelola Profil
+                    </a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors text-left">
+                            <i class="fa-solid fa-arrow-right-from-bracket w-4 text-center"></i>
+                            Keluar
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -97,15 +107,8 @@
         <div class="w-full">
             {{-- Header Title --}}
             <div class="mb-8 md:mb-12">
-                <div class="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-1.5 rounded-full mb-4">
-                    <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                    </span>
-                    <span class="text-xs font-semibold text-primary uppercase tracking-wider">Sistem Kasir</span>
-                </div>
                 <h1 class="font-display text-3xl md:text-5xl font-bold text-white mb-2">
-                    Kasir <span class="gradient-text italic">Offline.</span>
+                    Kasir <span class="gradient-text italic">Offline</span>
                 </h1>
                 <p class="text-gray-400">Input pesanan pelanggan yang datang langsung ke toko secara real-time.</p>
             </div>
@@ -205,8 +208,9 @@
     </main>
 
     {{-- Footer --}}
-    <footer class="shrink-0 border-t border-white/5 py-6 px-6 text-center">
-        <p class="text-slate-600 text-xs">&copy; 2026 <span class="text-{{ $accent }}-400 font-semibold">ALBRK.SHOECARE</span> {{ $isSuper ? 'Superadmin' : 'Admin' }} Panel</p>
+    <footer class="mt-auto w-full shrink-0 border-t border-slate-700/80 bg-[#0f172a]/50 px-6 py-6 text-center">
+        <p class="text-xs text-slate-500">&copy; 2026 <span class="font-semibold text-slate-400">ALBRK.SHOESCARE</span></p>
     </footer>
 </body>
 </html>
+

@@ -55,12 +55,16 @@ class ReservasiController extends Controller
     {
         $reservasi = $this->reservasiViewModel->createReservasi($request);
 
-        if (!$reservasi || !isset($reservasi['id'])) {
-            return back()->with('error', 'Gagal membuat reservasi.');
+        if ($reservasi instanceof RedirectResponse) {
+            return $reservasi;
+        }
+
+        if (!$reservasi || !isset($reservasi['id_reservasi'])) {
+            return back()->with('error', 'Gagal membuat reservasi.')->withInput();
         }
 
         if ($request->metode_pembayaran === 'Payment Gateway') {
-            return redirect()->route('reservasi.pembayaran', $reservasi['id']);
+            return redirect()->route('reservasi.pembayaran', $reservasi['id_reservasi']);
         }
 
         return redirect()->route('reservasi.riwayat')->with('success', 'Reservasi berhasil dibuat!');
@@ -87,8 +91,8 @@ class ReservasiController extends Controller
      */
     public function riwayat(): View
     {
-        $reservasis = $this->riwayatViewModel->getRiwayatReservasi();
-        return view('pelanggan.reservasi.riwayat', compact('reservasis'));
+        $riwayat = $this->riwayatViewModel->getRiwayatReservasi();
+        return view('pelanggan.reservasi.riwayat', compact('riwayat'));
     }
 
     /**

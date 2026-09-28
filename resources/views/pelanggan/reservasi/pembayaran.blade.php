@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Konfirmasi Pembayaran - ALBRK.SHOECARE</title>
+    <title>Konfirmasi Pembayaran - ALBRK.SHOESCARE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -47,7 +47,7 @@
         .glass-nav { 
             background: rgba(255, 255, 255, 0.65); 
             backdrop-filter: blur(28px); 
-            border-bottom: 1px solid rgba(255, 255, 255, 0.5); 
+            border-bottom: 1px solid rgba(148, 163, 184, 0.5); 
         }
         
         .glass-card {
@@ -67,9 +67,6 @@
 
     <header class="glass-nav px-6 md:px-12 py-4 flex justify-between items-center shrink-0 z-40 sticky top-0">
         <div class="flex items-center gap-3 md:gap-4">
-            <a href="{{ route('reservasi.riwayat') }}" class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all flex items-center justify-center shadow-sm group active:scale-95" title="Kembali ke Riwayat">
-                <i class="fa-solid fa-arrow-left text-sm group-hover:-translate-x-1 transition-transform"></i>
-            </a>
             <h1 class="block font-black text-xl md:text-2xl uppercase tracking-tighter italic text-slate-900 leading-tight">
                 ALBRK.<span class="text-indigo-600">CHECKOUT</span>
             </h1>
@@ -173,3 +170,4 @@
     </script>
 </body>
 </html>
+

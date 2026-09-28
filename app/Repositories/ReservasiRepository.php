@@ -19,7 +19,7 @@ class ReservasiRepository implements ReservasiRepositoryInterface
 
     public function getByUser(int $userId): Collection
     {
-        return Reservasi::with(['user', 'detailReservasis'])
+        return Reservasi::with(['user', 'detailReservasis.layanan'])
             ->where('id_user', $userId)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -28,7 +28,7 @@ class ReservasiRepository implements ReservasiRepositoryInterface
     public function getAntrean(): Collection
     {
         return Reservasi::with(['user', 'detailReservasis'])
-            ->whereIn('status', ['menunggu', 'di_terima', 'sedang_diproses'])
+            ->whereIn('status', ['menunggu', 'di_terima', 'sedang_diproses', 'selesai'])
             ->orderBy('tanggal_reservasi', 'asc')
             ->get();
     }

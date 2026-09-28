@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Antrean Pesanan - ALBRK.SHOECARE</title>
+    <title>Antrian Pesanan - ALBRK.SHOESCARE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,10 +12,8 @@
         .glass-panel { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
         
         /* Modifikasi Scrollbar agar cantik */
-        .custom-scroll::-webkit-scrollbar { width: 6px; }
-        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .custom-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+        .custom-scroll::-webkit-scrollbar { display: none; }
         
         .modal-active { overflow: hidden; }
         .detail-modal-bg { transition: all 0.3s ease; }
@@ -37,11 +35,8 @@
 
     <main class="flex-1 flex flex-col min-w-0 bg-[#0f172a] relative z-10 h-screen">
         
-        <header class="bg-[#0f172a]/40 backdrop-blur-xl border-b border-white/5 px-6 md:px-12 py-4 flex justify-between items-center shrink-0 z-40">
+        <header class="bg-[#0f172a]/40 backdrop-blur-xl border-b border-slate-700/80 px-6 md:px-12 py-4 flex justify-between items-center shrink-0 z-40">
             <div class="flex items-center gap-3 md:gap-4">
-                <a href="{{ $isSuper ? route('superadmin.dashboard') : route('admin.dashboard') }}" class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-slate-800/50 border border-slate-700 text-slate-400 hover:text-{{ $accent }}-400 hover:bg-slate-800 transition-all flex items-center justify-center shadow-sm group active:scale-95">
-                    <i class="fa-solid fa-arrow-left text-sm group-hover:-translate-x-1 transition-transform"></i>
-                </a>
                 <h1 class="block font-black text-xl md:text-2xl uppercase tracking-tighter italic text-white leading-tight">
                     ALBRK.<span class="text-{{ $accent }}-500">{{ $isSuper ? 'SUPER' : 'ADMIN' }}</span>
                 </h1>
@@ -50,17 +45,32 @@
                 <div class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-800/50 px-3 md:px-4 py-2 rounded-full border border-slate-700 hidden sm:block shadow-inner">
                     Hari ini: <span class="text-white">{{ now()->format('d M Y') }}</span>
                 </div>
-                <div class="flex items-center bg-slate-800/40 border border-slate-700 p-1 pr-4 rounded-full shadow-inner">
+                <div class="relative">
+                    <button type="button" id="userMenuButton" onclick="document.getElementById('userMenu').classList.toggle('hidden')" class="flex items-center bg-slate-800/40 border border-slate-700 p-1 pr-4 rounded-full shadow-inner hover:border-{{ $accent }}-500/40 transition-all">
                     <div class="w-8 h-8 rounded-full overflow-hidden bg-{{ $accent }}-600 flex items-center justify-center text-[10px] font-black text-white border border-slate-700 shadow-xl shadow-{{ $accent }}-500/20">
                         @if(auth()->user()->foto_profil)
-                            <img src="{{ asset('storage/' . auth()->user()->foto_profil) }}" class="w-full h-full object-cover">
+                            <img src="{{ route('profil.foto') }}" alt="Foto profil" class="w-full h-full rounded-full bg-white object-contain p-0.5" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden')">
+                            <span class="hidden">{{ $isSuper ? 'SU' : strtoupper(substr(auth()->user()->nama ?? 'AD', 0, 2)) }}</span>
                         @else
-                            {{ $isSuper ? 'SU' : strtoupper(substr(auth()->user()->nama, 0, 2)) }}
+                            {{ $isSuper ? 'SU' : strtoupper(substr(auth()->user()->nama ?? 'AD', 0, 2)) }}
                         @endif
                     </div>
                     <div class="ml-3 hidden md:block">
-                        <p class="text-[10px] font-black text-white uppercase tracking-widest leading-none">{{ explode(' ', auth()->user()->nama)[0] }}</p>
-                        <p class="text-[7px] font-bold text-{{ $accent }}-400/80 uppercase mt-0.5 tracking-tighter">{{ $isSuper ? 'Akses Pemilik' : 'Akses Staf' }}</p>
+                        <p class="text-[10px] font-black text-white uppercase tracking-widest leading-none">{{ explode(' ', auth()->user()->nama ?? 'Admin')[0] }}</p>
+                        <p class="text-[7px] font-bold text-{{ $accent }}-400/80 uppercase mt-0.5 tracking-tighter">{{ $isSuper ? 'Superadmin' : 'Akses Staf' }}</p>
+                    </div>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-500 ml-3"></i>
+                    </button>
+                    <div id="userMenu" class="hidden absolute right-0 mt-3 w-56 rounded-2xl bg-slate-900/95 border border-slate-700 shadow-2xl shadow-black/30 overflow-hidden z-50">
+                        <a href="{{ route('profil.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-300 hover:bg-{{ $accent }}-500/10 hover:text-{{ $accent }}-300 transition-colors">
+                            <i class="fa-solid fa-user-gear w-4 text-center"></i> Kelola Profil
+                        </a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors text-left">
+                                <i class="fa-solid fa-arrow-right-from-bracket w-4 text-center"></i> Keluar
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -71,12 +81,8 @@
 
             <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8 md:mb-10 relative z-10">
                 <div>
-                    <div class="inline-flex items-center gap-2 bg-{{ $accent }}-500/10 border border-{{ $accent }}-500/20 px-4 py-1.5 rounded-full mb-4">
-                        <span class="w-1.5 h-1.5 rounded-full bg-{{ $accent }}-500 animate-pulse shadow-[0_0_10px_currentColor]"></span>
-                        <p class="text-[8px] md:text-[9px] font-black text-{{ $accent }}-400 uppercase tracking-[0.4em]">Queue Manager</p>
-                    </div>
                     <h1 class="text-3xl md:text-5xl font-black text-white tracking-tighter leading-none mb-2">
-                        Antrean <span class="italic text-transparent bg-clip-text bg-gradient-to-r from-{{ $accent }}-400 to-teal-200">Pesanan.</span>
+                        Antrian <span class="italic text-{{ $accent }}-400">Pesanan</span>
                     </h1>
                     <p class="text-slate-400 font-medium text-sm">Monitor dan perbarui status pesanan pelanggan secara real-time.</p>
                 </div>
@@ -84,7 +90,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-10 relative z-10">
                 <div class="glass-panel p-6 md:p-8 rounded-[2rem] flex flex-col justify-center transition-all hover:border-slate-500/50 hover:bg-slate-800/80 group">
-                    <p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 group-hover:text-slate-300">Total Antrean</p>
+                    <p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 group-hover:text-slate-300">Total Antrian</p>
                     <h3 class="text-3xl md:text-4xl font-black text-white italic tracking-tighter">{{ $reservasis->count() }}</h3>
                 </div>
                 <div class="glass-panel relative overflow-hidden p-6 md:p-8 rounded-[2rem] flex flex-col justify-center transition-all border-amber-500/30">
@@ -116,7 +122,7 @@
                         <tbody class="divide-y divide-slate-800/50 text-sm">
                             @forelse($reservasis as $p)
                             @php
-                                $layananNama = $p->detail->first()->layanan->nama_layanan ?? 'N/A';
+                                $layananNama = $p->detail->map(fn ($detail) => $detail->layanan?->nama_layanan)->filter()->join(', ') ?: 'N/A';
                                 $metodeBayar = $p->pembayaran->metode_bayar ?? 'Cash';
                                 $noTelp = $p->user->no_telp ?? '';
                                 
@@ -175,6 +181,7 @@
                                                 <option value="di_terima" {{ $p->status === 'di_terima' ? 'selected' : '' }}>DITERIMA</option>
                                                 <option value="sedang_diproses" {{ $p->status === 'sedang_diproses' ? 'selected' : '' }}>DIPROSES</option>
                                                 <option value="selesai" {{ $p->status === 'selesai' ? 'selected' : '' }}>SELESAI</option>
+                                                <option value="diambil" {{ $p->status === 'diambil' ? 'selected' : '' }}>SUDAH DIAMBIL</option>
                                                 <option value="dibatalkan" {{ $p->status === 'dibatalkan' ? 'selected' : '' }}>BATALKAN</option>
                                             </select>
                                         </form>
@@ -192,7 +199,7 @@
                                 <td colspan="6" class="p-24 text-center">
                                     <div class="flex flex-col items-center opacity-30">
                                         <i class="fa-solid fa-clipboard-list text-6xl mb-4 text-slate-400"></i>
-                                        <p class="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400">Belum Ada Antrean</p>
+                                        <p class="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400">Belum Ada Antrian</p>
                                     </div>
                                 </td>
                             </tr>
@@ -202,10 +209,10 @@
                 </div>
             </div>
 
-            <div class="mt-auto pt-6 pb-2 border-t border-white/5 flex justify-center items-center opacity-40 shrink-0 relative z-10">
-                <p class="text-[9px] font-black uppercase tracking-[0.2em] w-full text-center text-white">© 2026 ALBRK.MASTER PANEL CONTROL</p>
-            </div>
         </div>
+        <footer class="mt-auto w-full shrink-0 border-t border-slate-700/80 bg-[#0f172a]/50 px-6 py-6 text-center">
+            <p class="text-xs text-slate-500">&copy; 2026 <span class="font-semibold text-slate-400">ALBRK.SHOESCARE</span></p>
+        </footer>
     </main>
 
     {{-- MODAL DETAIL (ANTI POTONG & BISA DI-SCROLL) --}}
@@ -332,3 +339,5 @@
     </script>
 </body>
 </html>
+
+

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masuk - ALBRK.SHOECARE</title>
+    <title>Masuk - ALBRK.SHOESCARE</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -177,9 +177,6 @@
             <a href="{{ route('register') }}" class="font-semibold text-gray-900 hover:text-black transition-colors">Daftar sekarang</a>
         </p>
 
-        <a href="{{ url('/') }}" class="block text-center text-sm text-gray-400 hover:text-gray-600 mt-4 transition-colors">
-            <i class="fa-solid fa-arrow-left mr-2"></i>Kembali ke Beranda
-        </a>
     </div>
 
     <script>
