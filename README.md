@@ -1,81 +1,101 @@
 # ALBRK Shoesclean
 
-ALBRK Shoesclean adalah aplikasi reservasi dan pengelolaan layanan cuci sepatu berbasis Laravel. Aplikasi ini mendukung alur pelanggan, admin, kasir, dan superadmin.
+ALBRK Shoesclean adalah aplikasi web untuk mengelola reservasi dan operasional jasa cuci sepatu. Aplikasi dibuat dengan Laravel dan Blade untuk tiga role utama: pelanggan, admin, dan superadmin.
 
-## Fitur
+## Fungsi Aplikasi
 
-- Pelanggan dapat memilih satu atau beberapa layanan dalam satu reservasi. Harga dihitung dari gabungan layanan terpilih dikalikan jumlah pasang sepatu.
-- Reservasi menyimpan setiap layanan sebagai detail terpisah, lalu menampilkan semua layanan pada riwayat pelanggan, antrean admin, dan laporan.
-- Pelanggan dapat memantau status reservasi dari menunggu hingga selesai.
-- Admin dapat memperbarui status pesanan. Pesanan berstatus selesai tetap berada di antrean sampai ditandai sudah diambil.
-- Aplikasi menyediakan pengelolaan katalog layanan, pengguna, kasir offline, pembayaran, dan laporan omzet.
+### Pengunjung
 
-## Arsitektur
+- Melihat halaman utama dan katalog layanan.
+- Membuat akun, masuk, dan menggunakan fitur pemulihan kata sandi.
 
-Project ini merupakan Laravel monolith modular dengan pemisahan layer dan pendekatan MVVM.
+### Pelanggan
+
+- Memilih satu atau beberapa layanan aktif untuk satu reservasi.
+- Menentukan jumlah pasang sepatu, metode penyerahan, dan metode pengembalian.
+- Membayar secara tunai atau melalui payment gateway Midtrans.
+- Melihat riwayat dan progres reservasi.
+- Membatalkan reservasi yang masih menunggu atau sudah diterima.
+
+Harga reservasi dihitung dengan menjumlahkan harga layanan yang dipilih, lalu mengalikannya dengan jumlah pasang sepatu. Setiap layanan disimpan sebagai baris detail tersendiri pada reservasi.
+
+### Admin
+
+- Melihat dashboard operasional dan antrean reservasi.
+- Memperbarui status pesanan: menunggu, diterima, sedang diproses, selesai, atau dibatalkan.
+- Menandai pesanan selesai sebagai sudah diambil. Pesanan selesai tetap terlihat di antrean sampai ditandai sudah diambil.
+- Mengelola katalog layanan dan pengguna.
+- Mencatat transaksi langsung melalui kasir offline.
+- Melihat dan mengunduh laporan omzet.
+
+### Superadmin
+
+Superadmin memiliki dashboard, antrean, katalog layanan, kasir offline, dan laporan yang sama dengan admin, serta kontrol tambahan untuk mengelola akun dan role pengguna.
+
+Semua pengguna yang masuk dapat mengelola profil. Superadmin juga dapat mengubah gambar banner dan bagian tentang pada halaman utama.
+
+## Alur Reservasi
+
+1. Pelanggan memilih satu atau beberapa layanan aktif dan jumlah sepatu.
+2. Aplikasi menghitung total harga dan menyimpan satu reservasi dengan satu detail untuk setiap layanan.
+3. Admin memproses pesanan melalui antrean. Pelanggan dapat melihat perubahan status di riwayat reservasi.
+4. Setelah status selesai, pesanan tetap tampil sampai admin menandainya sudah diambil.
+5. Pembayaran gateway diproses melalui Midtrans; pembayaran tunai dicatat sebagai pembayaran di kasir.
+
+## Teknologi dan Arsitektur
+
+- Laravel 12, PHP 8.2+, Blade, dan Tailwind CSS.
+- MySQL untuk penyimpanan data.
+- Vite dan npm untuk aset frontend.
+- Midtrans untuk pembayaran online.
+- Layer aplikasi menggunakan konsep MVM dengan Service dan Repository.
 
 ```text
 Route -> Controller -> ViewModel -> Service -> Repository -> Model -> Database
                            |
                            v
-                         View
+                         Blade View
 ```
 
-- `Controller` menerima request dan memilih alur proses.
-- `ViewModel` menyiapkan data untuk tampilan.
-- `Service` berisi logika bisnis.
-- `Repository` menangani akses data.
-- `Model` merepresentasikan tabel database.
-- `View` menampilkan halaman Blade.
+- `Controller` menerima request dan menentukan alur aplikasi.
+- `ViewModel` menyiapkan data untuk halaman.
+- `Service` menangani aturan bisnis, seperti perhitungan harga reservasi.
+- `Repository` membaca dan mengubah data melalui model.
+- `Model` merepresentasikan tabel dan relasi database.
+- `resources/views` berisi halaman Blade untuk pengunjung, pelanggan, admin, dan superadmin.
 
 ## Struktur Folder
 
 ```text
 albrkshoesclean/
-|-- app/                      # Controller, model, service, repository, dan ViewModel
+|-- app/                      # Controller, model, request, service, repository, ViewModel
 |-- bootstrap/                # Bootstrap Laravel
-|-- config/                   # Konfigurasi Laravel
+|-- config/                   # Konfigurasi aplikasi
 |-- database/                 # Migration, seeder, dan factory
-|-- public/                   # Document root web server
+|-- public/                   # Document root dan aset publik
 |-- resources/views/          # Tampilan Blade
-|-- routes/                   # Definisi route aplikasi
-|-- storage/                  # Cache, log, dan upload runtime
+|-- routes/                   # Route web dan console
+|-- storage/                  # Log, cache, dan file runtime
 |-- tests/                    # Test aplikasi
 |-- artisan
 |-- composer.json
 `-- package.json
 ```
 
-## Menjalankan untuk Development
+## Menjalankan di Lokal
 
-Persyaratan utama: PHP 8.2+, Composer, Node.js, npm, dan MySQL.
+Persyaratan: PHP 8.2 atau lebih baru, Composer, Node.js/npm, dan MySQL.
 
-Jalankan dari folder project:
+Jalankan dari direktori root project:
 
 ```powershell
 composer install
-Copy-Item .env.example .env # jika file .env belum ada
+Copy-Item .env.example .env # lakukan hanya jika .env belum tersedia
 php artisan key:generate
 npm install
 ```
 
-Sesuaikan koneksi database pada `.env`, lalu jalankan migrasi dan data awal:
-
-```powershell
-php artisan migrate --seed
-```
-
-Jalankan Laravel dan Vite:
-
-```powershell
-composer run dev
-```
-
-Website tersedia di `http://127.0.0.1:8000`.
-
-## Database
-
-Contoh konfigurasi MySQL pada `.env`:
+Isi koneksi database dan kredensial layanan yang diperlukan di `.env`. Contoh koneksi MySQL:
 
 ```env
 DB_CONNECTION=mysql
@@ -86,13 +106,21 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-Jalankan migrasi baru dengan:
+Buat database tersebut, lalu jalankan migrasi dan data awal:
 
 ```powershell
-php artisan migrate
+php artisan migrate --seed
 ```
 
-Untuk menghapus seluruh tabel dan membangun ulang database beserta seed, gunakan `php artisan migrate:fresh --seed`. Perintah ini menghapus data yang ada.
+> `php artisan migrate:fresh --seed` menghapus semua tabel dan data sebelum membangunnya ulang.
+
+Jalankan server Laravel dan Vite:
+
+```powershell
+composer run dev
+```
+
+Aplikasi tersedia di `http://127.0.0.1:8000`.
 
 ## Build Production
 
@@ -107,4 +135,4 @@ php artisan route:cache
 php artisan view:cache
 ```
 
-Atur `.env` production, termasuk `APP_ENV=production`, `APP_DEBUG=false`, dan `APP_URL` sesuai domain aplikasi.
+Atur nilai production di `.env`, termasuk `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL`, koneksi database, dan kredensial Midtrans.
